@@ -1,0 +1,13 @@
+{
+  "name": "medterm-quest-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "MedTermQuest — Adaptive medical terminology learning (standalone HTML frontend)",
+  "scripts": {
+    "dev": "python3 -m http.server 3000",
+    "serve": "npx serve . -p 3000"
+  },
+  "keywords": ["medical", "nlp", "entropy", "adaptive-learning"],
+  "author": "MedTermQuest",
+  "license": "MIT"
+}

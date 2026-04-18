@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>MedTermQuest — Adaptive Medical NLP Learning</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --cream:#faf8f5;--ink:#1a1612;--ink2:#3d3830;--ink3:#7a7268;
+  --red:#c0392b;--red-light:#fdf0ee;--red-mid:#e8a09a;
+  --teal:#0d6b6b;--teal-light:#e8f4f4;--teal-mid:#7fbfbf;
+  --amber:#b8860b;--amber-light:#fdf8e8;--amber-mid:#d4af67;
+  --violet:#4a2d8a;--violet-light:#f0ecf9;--violet-mid:#9980c8;
+  --green:#1a6b3a;--green-light:#e8f4ec;--green-mid:#7fbfa0;
+  --border:#e5e0d8;--border2:#cec8be;
+  --r:8px;--r2:14px;--r3:20px;
+  --shadow:0 1px 3px rgba(26,22,18,.08),0 4px 16px rgba(26,22,18,.04);
+  --shadow2:0 4px 12px rgba(26,22,18,.12),0 12px 40px rgba(26,22,18,.08);
+  --mono:'DM Mono',monospace;
+  --serif:'DM Serif Display',serif;
+  --sans:'Inter',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--sans);background:var(--cream);color:var(--ink);min-height:100vh;line-height:1.6}
+button{cursor:pointer;font-family:var(--sans)}
+input{font-family:var(--sans)}
+a{color:inherit;text-decoration:none}
+
+/* ── Layout ── */
+.app{min-height:100vh;display:flex;flex-direction:column}
+.nav{background:#fff;border-bottom:1px solid var(--border);padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:100}
+.nav-logo{font-family:var(--serif);font-size:22px;color:var(--ink);display:flex;align-items:center;gap:8px}
+.nav-logo .dot{color:var(--red)}
+.nav-right{display:flex;align-items:center;gap:12px}
+.nav-user{font-size:13px;color:var(--ink3);display:flex;align-items:center;gap:8px}
+.nav-badge{background:var(--teal-light);color:var(--teal);font-size:11px;padding:2px 8px;border-radius:99px;font-weight:500;text-transform:capitalize}
+.page{flex:1;padding:32px}
+.page-center{max-width:960px;margin:0 auto}
+.page-wide{max-width:1200px;margin:0 auto}
+
+/* ── Buttons ── */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:var(--r);font-size:14px;font-weight:500;border:none;transition:all .15s}
+.btn-primary{background:var(--teal);color:#fff}.btn-primary:hover{background:#0a5858}
+.btn-danger{background:var(--red);color:#fff}.btn-danger:hover{background:#a93226}
+.btn-ghost{background:none;border:1px solid var(--border2);color:var(--ink2)}.btn-ghost:hover{border-color:var(--teal);color:var(--teal)}
+.btn-sm{padding:6px 14px;font-size:13px}
+.btn-lg{padding:13px 28px;font-size:15px;border-radius:var(--r2)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+
+/* ── Cards ── */
+.card{background:#fff;border:1px solid var(--border);border-radius:var(--r2);padding:24px;box-shadow:var(--shadow)}
+.card-sm{padding:16px;border-radius:var(--r)}
+
+/* ── Auth ── */
+.auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--cream);padding:24px}
+.auth-card{width:100%;max-width:440px;background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:40px;box-shadow:var(--shadow2)}
+.auth-logo{text-align:center;margin-bottom:32px}
+.auth-logo h1{font-family:var(--serif);font-size:32px;color:var(--ink)}
+.auth-logo p{font-size:13px;color:var(--ink3);margin-top:4px}
+.auth-tabs{display:flex;background:var(--cream);border-radius:var(--r);padding:3px;margin-bottom:28px}
+.auth-tab{flex:1;padding:8px;text-align:center;border-radius:6px;font-size:14px;font-weight:500;color:var(--ink3);background:none;border:none;transition:all .15s}
+.auth-tab.active{background:#fff;color:var(--teal);box-shadow:var(--shadow)}
+.form-group{margin-bottom:18px}
+.form-label{display:block;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3);margin-bottom:6px}
+.form-input{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--r);font-size:14px;color:var(--ink);background:#fff;transition:border-color .15s}
+.form-input:focus{outline:none;border-color:var(--teal)}
+.form-input::placeholder{color:var(--ink3)}
+.form-error{font-size:12px;color:var(--red);margin-top:4px}
+.form-select{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--r);font-size:14px;color:var(--ink);background:#fff;appearance:none}
+.auth-submit{width:100%;padding:12px;background:var(--teal);color:#fff;border:none;border-radius:var(--r);font-size:15px;font-weight:600;margin-top:8px;transition:background .15s}
+.auth-submit:hover{background:#0a5858}
+
+/* ── Dashboard ── */
+.dash-header{margin-bottom:32px}
+.dash-header h1{font-family:var(--serif);font-size:30px;color:var(--ink)}
+.dash-header p{color:var(--ink3);font-size:15px;margin-top:4px}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px}
+@media(max-width:768px){.stats-grid{grid-template-columns:repeat(2,1fr)}}
+.stat-card{background:#fff;border:1px solid var(--border);border-radius:var(--r2);padding:20px}
+.stat-label{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-bottom:8px}
+.stat-value{font-family:var(--serif);font-size:30px;color:var(--ink);line-height:1}
+.stat-sub{font-size:12px;color:var(--ink3);margin-top:4px}
+.stat-card.accent-teal .stat-value{color:var(--teal)}
+.stat-card.accent-red .stat-value{color:var(--red)}
+.stat-card.accent-amber .stat-value{color:var(--amber)}
+.stat-card.accent-violet .stat-value{color:var(--violet)}
+
+/* ── Category Mastery ── */
+.mastery-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+@media(max-width:600px){.mastery-grid{grid-template-columns:1fr}}
+.mastery-item{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--cream);border-radius:var(--r);border:1px solid var(--border)}
+.mastery-cat{font-size:13px;font-weight:500;color:var(--ink);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mastery-bar-wrap{flex:2;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.mastery-bar{height:100%;border-radius:3px;transition:width .6s ease}
+.mastery-pct{font-size:12px;font-weight:600;color:var(--ink2);min-width:34px;text-align:right;font-family:var(--mono)}
+
+/* ── Quiz ── */
+.quiz-wrap{max-width:720px;margin:0 auto}
+.quiz-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
+.quiz-progress-bar{height:4px;background:var(--border);border-radius:2px;overflow:hidden;flex:1;margin:0 16px}
+.quiz-progress-fill{height:100%;background:var(--teal);border-radius:2px;transition:width .4s ease}
+.quiz-meta{display:flex;gap:16px;margin-bottom:20px}
+.quiz-tag{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:500;padding:4px 10px;border-radius:99px}
+.quiz-tag.cat{background:var(--teal-light);color:var(--teal)}
+.quiz-tag.diff{background:var(--amber-light);color:var(--amber)}
+.quiz-tag.eig{background:var(--violet-light);color:var(--violet);font-family:var(--mono)}
+.quiz-question{font-family:var(--serif);font-size:22px;color:var(--ink);line-height:1.4;margin-bottom:8px}
+.quiz-term{font-size:32px;font-weight:400;font-family:var(--serif);color:var(--teal);display:block;margin-bottom:20px}
+.quiz-options{display:flex;flex-direction:column;gap:10px;margin-bottom:24px}
+.quiz-option{padding:14px 18px;border:2px solid var(--border);border-radius:var(--r2);font-size:14px;color:var(--ink2);background:#fff;text-align:left;transition:all .15s;line-height:1.5}
+.quiz-option:hover:not(:disabled){border-color:var(--teal);color:var(--teal);background:var(--teal-light)}
+.quiz-option.selected-correct{border-color:var(--green);background:var(--green-light);color:var(--green)}
+.quiz-option.selected-wrong{border-color:var(--red);background:var(--red-light);color:var(--red)}
+.quiz-option.reveal-correct{border-color:var(--green);background:var(--green-light);color:var(--green);opacity:.7}
+.quiz-option:disabled{cursor:not-allowed}
+.feedback-card{border-radius:var(--r2);padding:20px;margin-bottom:20px;animation:slide-in .3s ease}
+.feedback-card.correct{background:var(--green-light);border:1px solid var(--green-mid)}
+.feedback-card.wrong{background:var(--red-light);border:1px solid var(--red-mid)}
+.feedback-title{font-weight:600;font-size:16px;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.feedback-card.correct .feedback-title{color:var(--green)}
+.feedback-card.wrong .feedback-title{color:var(--red)}
+.feedback-def{font-size:14px;color:var(--ink2);margin-bottom:12px;line-height:1.6}
+.feedback-pills{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.feedback-pill{font-size:11px;padding:3px 8px;border-radius:99px;font-weight:500}
+.feedback-pill.mnemonic{background:var(--amber-light);color:var(--amber)}
+.feedback-pill.root{background:var(--violet-light);color:var(--violet)}
+.feedback-pill.related{background:var(--teal-light);color:var(--teal)}
+.entropy-chip{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;padding:4px 10px;border-radius:99px;background:var(--violet-light);color:var(--violet);border:1px solid var(--violet-mid)}
+@keyframes slide-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── Start Screen ── */
+.start-hero{text-align:center;padding:40px 20px}
+.start-hero h1{font-family:var(--serif);font-size:42px;color:var(--ink);margin-bottom:12px}
+.start-hero p{font-size:16px;color:var(--ink3);max-width:520px;margin:0 auto 32px}
+.mode-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:32px}
+@media(max-width:600px){.mode-grid{grid-template-columns:1fr}}
+.mode-card{background:#fff;border:2px solid var(--border);border-radius:var(--r2);padding:20px;text-align:left;transition:all .2s;cursor:pointer}
+.mode-card:hover,.mode-card.selected{border-color:var(--teal);background:var(--teal-light)}
+.mode-card.selected .mode-icon{background:var(--teal)}
+.mode-icon{width:40px;height:40px;border-radius:var(--r);background:var(--border);display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:12px;transition:background .2s}
+.mode-title{font-weight:600;font-size:15px;color:var(--ink);margin-bottom:4px}
+.mode-desc{font-size:13px;color:var(--ink3);line-height:1.5}
+.config-row{display:flex;gap:16px;margin-bottom:24px}
+.config-row > *{flex:1}
+
+/* ── Progress page ── */
+.section-title{font-family:var(--serif);font-size:20px;color:var(--ink);margin-bottom:16px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px}
+@media(max-width:700px){.two-col{grid-template-columns:1fr}}
+.session-row{padding:14px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
+.session-row:last-child{border-bottom:none}
+.session-date{font-size:12px;color:var(--ink3);font-family:var(--mono);min-width:90px}
+.session-mode{font-size:13px;font-weight:500;color:var(--ink2);flex:1}
+.session-acc{font-family:var(--mono);font-size:13px;font-weight:600}
+.acc-good{color:var(--green)}.acc-ok{color:var(--amber)}.acc-bad{color:var(--red)}
+.term-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)}
+.term-row:last-child{border-bottom:none}
+.term-name{font-size:13px;font-weight:500;color:var(--ink);flex:1}
+.term-cat{font-size:11px;color:var(--ink3)}
+.mastery-pill{font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;font-family:var(--mono)}
+.mp-low{background:var(--red-light);color:var(--red)}
+.mp-mid{background:var(--amber-light);color:var(--amber)}
+.mp-high{background:var(--green-light);color:var(--green)}
+.entropy-bar-section{margin-bottom:24px}
+.entropy-timeline{display:flex;flex-direction:column;gap:4px;max-height:180px;overflow-y:auto}
+.entropy-tick{display:flex;align-items:center;gap:10px;font-size:11px;color:var(--ink3);font-family:var(--mono)}
+.entropy-tick-bar{height:14px;background:var(--violet-mid);border-radius:2px;min-width:4px;opacity:.7}
+
+/* ── Leaderboard ── */
+.lb-table{width:100%;border-collapse:collapse}
+.lb-table th{text-align:left;padding:10px 12px;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3);border-bottom:2px solid var(--border)}
+.lb-table td{padding:12px;border-bottom:1px solid var(--border);font-size:14px}
+.lb-table tr:last-child td{border-bottom:none}
+.lb-rank{font-family:var(--serif);font-size:18px;color:var(--ink3)}
+.lb-rank.top{color:var(--amber)}
+.lb-user{font-weight:500;color:var(--ink)}
+.lb-role{font-size:11px;color:var(--ink3);text-transform:capitalize}
+.lb-score{font-family:var(--mono);font-weight:600;color:var(--teal)}
+
+/* ── Session summary ── */
+.summary-wrap{max-width:600px;margin:0 auto;text-align:center;padding:40px 20px}
+.summary-score{font-family:var(--serif);font-size:64px;color:var(--teal);line-height:1;margin-bottom:8px}
+.summary-label{font-size:16px;color:var(--ink3);margin-bottom:32px}
+.summary-chips{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin-bottom:32px}
+.summary-chip{font-size:13px;padding:6px 14px;border-radius:99px;font-family:var(--mono)}
+.chip-teal{background:var(--teal-light);color:var(--teal)}
+.chip-violet{background:var(--violet-light);color:var(--violet)}
+.chip-amber{background:var(--amber-light);color:var(--amber)}
+.weak-area{background:var(--red-light);border:1px solid var(--red-mid);border-radius:var(--r);padding:10px 14px;margin-bottom:8px;font-size:13px;color:var(--red);font-weight:500}
+
+/* ── Misc ── */
+.divider{height:1px;background:var(--border);margin:24px 0}
+.empty{text-align:center;color:var(--ink3);font-size:14px;padding:40px 0}
+.tag{font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;letter-spacing:.04em;text-transform:uppercase}
+.tag-red{background:var(--red-light);color:var(--red)}
+.tag-green{background:var(--green-light);color:var(--green)}
+.tag-amber{background:var(--amber-light);color:var(--amber)}
+.spinner{display:inline-block;width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--teal);border-radius:50%;animation:spin .6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-full{min-height:200px;display:flex;align-items:center;justify-content:center;gap:12px;color:var(--ink3)}
+.alert{padding:12px 16px;border-radius:var(--r);font-size:14px;margin-bottom:16px}
+.alert-error{background:var(--red-light);color:var(--red);border:1px solid var(--red-mid)}
+.alert-info{background:var(--teal-light);color:var(--teal);border:1px solid var(--teal-mid)}
+.tab-bar{display:flex;gap:4px;background:var(--cream);border-radius:var(--r);padding:3px;margin-bottom:24px}
+.tab{flex:1;padding:8px 12px;text-align:center;border-radius:6px;font-size:13px;font-weight:500;color:var(--ink3);background:none;border:none;transition:all .15s}
+.tab.active{background:#fff;color:var(--teal);box-shadow:var(--shadow)}
+.tooltip{position:relative;cursor:help}
+.tooltip-text{display:none;position:absolute;bottom:calc(100% + 4px);left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;font-size:11px;padding:4px 8px;border-radius:4px;white-space:nowrap;z-index:99}
+.tooltip:hover .tooltip-text{display:block}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════════
+//  MedTermQuest — Complete Frontend (Vanilla JS SPA)
+//  No build tools required — runs entirely in the browser.
+//  Connects to FastAPI backend at API_BASE.
+// ═══════════════════════════════════════════════════════════════════════
+
+const API_BASE = 'http://localhost:8000';
+
+// ── State ─────────────────────────────────────────────────────────────
+let state = {
+  view: 'auth',           // auth | dashboard | quiz | progress | leaderboard
+  authTab: 'login',
+  user: null,
+  token: null,
+  loading: false,
+  error: null,
+  // Dashboard
+  overview: null,
+  // Quiz
+  quizMode: 'adaptive',
+  quizCategory: '',
+  quizDifficulty: '',
+  quizNumQ: 10,
+  session: null,
+  currentQuestion: null,
+  selectedAnswer: null,
+  feedback: null,
+  sessionSummary: null,
+  questionsAsked: 0,
+  questionsTotal: 10,
+  // Progress
+  progressTab: 'overview',
+  sessionHistory: null,
+  leaderboard: null,
+  knowledgeMap: null,
+};
+
+// ── API Helpers ───────────────────────────────────────────────────────
+async function api(method, path, body = null, requireAuth = true) {
+  const headers = { 'Content-Type': 'application/json' };
+  if (requireAuth && state.token) headers['Authorization'] = `Bearer ${state.token}`;
+  const opts = { method, headers };
+  if (body) opts.body = JSON.stringify(body);
+  try {
+    const r = await fetch(API_BASE + path, opts);
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.detail || 'API error');
+    return data;
+  } catch (e) {
+    throw e;
+  }
+}
+
+async function apiForm(path, formData) {
+  const r = await fetch(API_BASE + path, {
+    method: 'POST',
+    body: formData,
+  });
+  const data = await r.json();
+  if (!r.ok) throw new Error(data.detail || 'Login failed');
+  return data;
+}
+
+// ── Persistence ───────────────────────────────────────────────────────
+function saveAuth(token, user) {
+  localStorage.setItem('mq_token', token);
+  localStorage.setItem('mq_user', JSON.stringify(user));
+  state.token = token;
+  state.user = user;
+}
+
+function loadAuth() {
+  state.token = localStorage.getItem('mq_token');
+  const u = localStorage.getItem('mq_user');
+  if (u) state.user = JSON.parse(u);
+}
+
+function clearAuth() {
+  localStorage.removeItem('mq_token');
+  localStorage.removeItem('mq_user');
+  state.token = null;
+  state.user = null;
+}
+
+// ── Render Engine ─────────────────────────────────────────────────────
+function render() {
+  const app = document.getElementById('app');
+  if (state.view === 'auth') { app.innerHTML = renderAuth(); bindAuth(); return; }
+  app.innerHTML = `${renderNav()}${renderPage()}`;
+  bindPage();
+}
+
+// ── Navigation ─────────────────────────────────────────────────────────
+function renderNav() {
+  return `<nav class="nav">
+    <div class="nav-logo">
+      <span>MedTerm</span><span class="dot">Quest</span>
+    </div>
+    <div class="nav-right">
+      <button class="btn btn-ghost btn-sm ${state.view==='dashboard'?'btn-primary':''}" onclick="goto('dashboard')">Home</button>
+      <button class="btn btn-ghost btn-sm ${state.view==='quiz'?'btn-primary':''}" onclick="goto('quiz')">Quiz</button>
+      <button class="btn btn-ghost btn-sm ${state.view==='progress'?'btn-primary':''}" onclick="loadProgress()">Progress</button>
+      <button class="btn btn-ghost btn-sm ${state.view==='leaderboard'?'btn-primary':''}" onclick="loadLeaderboard()">Leaderboard</button>
+      <div class="nav-user">
+        <span>${state.user?.username || ''}</span>
+        <span class="nav-badge">${state.user?.role || 'student'}</span>
+        <button class="btn btn-ghost btn-sm" onclick="logout()">Sign out</button>
+      </div>
+    </div>
+  </nav>`;
+}
+
+function goto(view) {
+  state.view = view;
+  state.error = null;
+  if (view === 'dashboard' && !state.overview) loadDashboard();
+  render();
+}
+
+// ── Auth Page ──────────────────────────────────────────────────────────
+function renderAuth() {
+  return `<div class="auth-wrap">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <h1>MedTerm<span style="color:var(--red)">Quest</span></h1>
+        <p>Adaptive Medical Terminology Learning<br>powered by Greedy Entropy Maximization</p>
+      </div>
+      <div class="auth-tabs">
+        <button class="auth-tab ${state.authTab==='login'?'active':''}" onclick="switchTab('login')">Sign In</button>
+        <button class="auth-tab ${state.authTab==='signup'?'active':''}" onclick="switchTab('signup')">Create Account</button>
+      </div>
+      ${state.error ? `<div class="alert alert-error">${state.error}</div>` : ''}
+      ${state.authTab === 'login' ? renderLogin() : renderSignup()}
+    </div>
+  </div>`;
+}
+
+function renderLogin() {
+  return `<form id="login-form">
+    <div class="form-group">
+      <label class="form-label">Email or Username</label>
+      <input class="form-input" name="username" placeholder="Enter your email or username" required/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <input class="form-input" name="password" type="password" placeholder="Your password" required/>
+    </div>
+    <button class="auth-submit" type="submit">${state.loading?'Signing in…':'Sign In'}</button>
+  </form>`;
+}
+
+function renderSignup() {
+  return `<form id="signup-form">
+    <div class="form-group">
+      <label class="form-label">Full Name</label>
+      <input class="form-input" name="full_name" placeholder="Dr. Jane Smith"/>
+    </div>
+    <div style="display:flex;gap:12px">
+      <div class="form-group" style="flex:1">
+        <label class="form-label">Username</label>
+        <input class="form-input" name="username" placeholder="jsmith" required/>
+      </div>
+      <div class="form-group" style="flex:1">
+        <label class="form-label">Role</label>
+        <select class="form-select" name="role">
+          <option value="student">Student</option>
+          <option value="resident">Resident</option>
+          <option value="attending">Attending</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Email</label>
+      <input class="form-input" name="email" type="email" placeholder="jane@med.edu" required/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <input class="form-input" name="password" type="password" placeholder="Min. 6 characters" required minlength="6"/>
+    </div>
+    <button class="auth-submit" type="submit">${state.loading?'Creating account…':'Create Account'}</button>
+  </form>`;
+}
+
+function bindAuth() {
+  const lf = document.getElementById('login-form');
+  const sf = document.getElementById('signup-form');
+  if (lf) lf.addEventListener('submit', async e => {
+    e.preventDefault();
+    state.loading = true; state.error = null; render();
+    const fd = new FormData(lf);
+    try {
+      const data = await apiForm('/auth/login', fd);
+      saveAuth(data.access_token, data.user);
+      state.view = 'dashboard'; state.loading = false;
+      loadDashboard();
+    } catch(err) {
+      state.error = err.message; state.loading = false; render();
+    }
+  });
+  if (sf) sf.addEventListener('submit', async e => {
+    e.preventDefault();
+    state.loading = true; state.error = null; render();
+    const fd = new FormData(sf);
+    try {
+      const data = await api('POST', '/auth/signup', {
+        username: fd.get('username'), email: fd.get('email'),
+        password: fd.get('password'), full_name: fd.get('full_name'),
+        role: fd.get('role'),
+      }, false);
+      saveAuth(data.access_token, data.user);
+      state.view = 'dashboard'; state.loading = false;
+      loadDashboard();
+    } catch(err) {
+      state.error = err.message; state.loading = false; render();
+    }
+  });
+}
+
+function switchTab(tab) { state.authTab = tab; state.error = null; render(); }
+
+function logout() {
+  clearAuth();
+  state.view = 'auth'; state.overview = null; state.session = null;
+  state.currentQuestion = null; state.feedback = null; state.sessionSummary = null;
+  render();
+}
+
+// ── Dashboard ──────────────────────────────────────────────────────────
+async function loadDashboard() {
+  state.loading = true; render();
+  try {
+    state.overview = await api('GET', '/progress/overview');
+    state.view = 'dashboard'; state.loading = false; render();
+  } catch(e) {
+    state.error = e.message; state.loading = false; render();
+  }
+}
+
+function renderPage() {
+  if (state.loading) return `<div class="page"><div class="loading-full"><div class="spinner"></div> Loading…</div></div>`;
+  if (state.view === 'dashboard') return renderDashboard();
+  if (state.view === 'quiz') return renderQuizPage();
+  if (state.view === 'progress') return renderProgressPage();
+  if (state.view === 'leaderboard') return renderLeaderboardPage();
+  return '<div class="page"><p>Page not found</p></div>';
+}
+
+function renderDashboard() {
+  const ov = state.overview;
+  if (!ov) return `<div class="page"><div class="page-center">${renderStartPanel()}</div></div>`;
+  const s = ov.stats;
+
+  return `<div class="page"><div class="page-wide">
+    <div class="dash-header">
+      <h1>Welcome back, ${ov.user.full_name || ov.user.username} 👋</h1>
+      <p>Your AI tutor has ${s.terms_total - s.terms_tested} new terms ready to test you on. Current system entropy: <strong style="font-family:var(--mono)">${s.current_entropy.toFixed(3)} bits</strong></p>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card accent-teal">
+        <div class="stat-label">Overall Mastery</div>
+        <div class="stat-value">${s.overall_mastery}%</div>
+        <div class="stat-sub">${s.terms_tested} / ${s.terms_total} terms tested</div>
+      </div>
+      <div class="stat-card accent-amber">
+        <div class="stat-label">Accuracy</div>
+        <div class="stat-value">${s.overall_accuracy}%</div>
+        <div class="stat-sub">${s.total_correct} / ${s.total_questions} correct</div>
+      </div>
+      <div class="stat-card accent-red">
+        <div class="stat-label">Sessions</div>
+        <div class="stat-value">${s.total_sessions}</div>
+        <div class="stat-sub">${s.streak_days} day streak 🔥</div>
+      </div>
+      <div class="stat-card accent-violet">
+        <div class="stat-label">Knowledge Entropy</div>
+        <div class="stat-value" style="font-size:22px;font-family:var(--mono)">${s.current_entropy.toFixed(3)}</div>
+        <div class="stat-sub">bits — lower = more certain</div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="section-title">Category Mastery</div>
+        <div class="mastery-grid">
+          ${Object.entries(ov.category_mastery).map(([cat, data]) => `
+            <div class="mastery-item">
+              <div class="mastery-cat">${cat}</div>
+              <div class="mastery-bar-wrap"><div class="mastery-bar" style="width:${data.mastery_score}%;background:${masteryColor(data.mastery_score)}"></div></div>
+              <div class="mastery-pct">${data.mastery_score}%</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+      <div class="card">
+        <div class="section-title">Terms to Focus On</div>
+        ${ov.weak_terms.map(t => `
+          <div class="term-row">
+            <div>
+              <div class="term-name">${t.term}</div>
+              <div class="term-cat">${t.category} · Difficulty ${t.difficulty}</div>
+            </div>
+            <span class="mastery-pill ${t.mastery < 35 ? 'mp-low' : t.mastery < 65 ? 'mp-mid' : 'mp-high'}">${t.mastery}%</span>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:24px">
+      <div class="section-title">Start a New Session</div>
+      ${renderStartPanel(true)}
+    </div>
+
+    <div class="card">
+      <div class="section-title">Recent Sessions</div>
+      ${ov.recent_sessions.length ? ov.recent_sessions.map(s => `
+        <div class="session-row">
+          <div class="session-date">${new Date(s.started_at).toLocaleDateString()}</div>
+          <div class="session-mode">${s.mode.charAt(0).toUpperCase()+s.mode.slice(1)} ${s.category_filter ? '· '+s.category_filter : ''}</div>
+          <div class="session-acc ${s.accuracy>=75?'acc-good':s.accuracy>=50?'acc-ok':'acc-bad'}">${s.accuracy}% (${s.correct_answers}/${s.questions_asked})</div>
+        </div>
+      `).join('') : '<div class="empty">No sessions yet — start your first quiz!</div>'}
+    </div>
+  </div></div>`;
+}
+
+function masteryColor(pct) {
+  if (pct >= 75) return 'var(--green)';
+  if (pct >= 50) return 'var(--amber)';
+  return 'var(--red)';
+}
+
+// ── Quiz Page ──────────────────────────────────────────────────────────
+function renderQuizPage() {
+  if (state.sessionSummary) return renderSessionSummary();
+  if (state.session && state.currentQuestion) return renderQuestion();
+  return `<div class="page"><div class="page-center">${renderStartPanel()}</div></div>`;
+}
+
+function renderStartPanel(compact = false) {
+  const categories = state.overview
+    ? Object.keys(state.overview.category_mastery)
+    : ['Cardiovascular','Neurology','Respiratory','Endocrinology','Pharmacology',
+       'Pathology','Microbiology','Psychiatry','Immunology','Hematology',
+       'Gastroenterology','Nephrology','Anatomy'];
+
+  return `
+    ${!compact ? `<div class="start-hero">
+      <h1>Adaptive Medical Quiz</h1>
+      <p>The AI selects each question to maximize information gain about your knowledge state using Shannon entropy.</p>
+    </div>` : ''}
+    <div class="mode-grid">
+      <div class="mode-card ${state.quizMode==='adaptive'?'selected':''}" onclick="setMode('adaptive')">
+        <div class="mode-icon">${state.quizMode==='adaptive'?'✦':'⬡'}</div>
+        <div class="mode-title">Adaptive (AI-Driven)</div>
+        <div class="mode-desc">Greedy entropy maximization selects the most informative question each time.</div>
+      </div>
+      <div class="mode-card ${state.quizMode==='category'?'selected':''}" onclick="setMode('category')">
+        <div class="mode-icon">📂</div>
+        <div class="mode-title">By Category</div>
+        <div class="mode-desc">Focus on one medical domain — entropy scoring still active within category.</div>
+      </div>
+      <div class="mode-card ${state.quizMode==='difficulty'?'selected':''}" onclick="setMode('difficulty')">
+        <div class="mode-icon">📊</div>
+        <div class="mode-title">By Difficulty</div>
+        <div class="mode-desc">Challenge yourself with a specific difficulty tier (1=basic to 4=expert).</div>
+      </div>
+    </div>
+
+    <div class="config-row">
+      ${state.quizMode === 'category' ? `
+        <div>
+          <label class="form-label">Category</label>
+          <select class="form-select" onchange="state.quizCategory=this.value">
+            <option value="">Select a category…</option>
+            ${categories.map(c => `<option value="${c}" ${state.quizCategory===c?'selected':''}>${c}</option>`).join('')}
+          </select>
+        </div>` : ''}
+      ${state.quizMode === 'difficulty' ? `
+        <div>
+          <label class="form-label">Difficulty Level</label>
+          <select class="form-select" onchange="state.quizDifficulty=parseInt(this.value)">
+            <option value="">Select difficulty…</option>
+            <option value="1">1 — Basic</option>
+            <option value="2">2 — Intermediate</option>
+            <option value="3">3 — Advanced</option>
+            <option value="4">4 — Expert</option>
+          </select>
+        </div>` : ''}
+      <div>
+        <label class="form-label">Number of Questions</label>
+        <select class="form-select" onchange="state.quizNumQ=parseInt(this.value)">
+          <option value="5" ${state.quizNumQ===5?'selected':''}>5 questions</option>
+          <option value="10" ${state.quizNumQ===10?'selected':''}>10 questions</option>
+          <option value="15" ${state.quizNumQ===15?'selected':''}>15 questions</option>
+          <option value="20" ${state.quizNumQ===20?'selected':''}>20 questions</option>
+        </select>
+      </div>
+    </div>
+    ${state.error ? `<div class="alert alert-error">${state.error}</div>` : ''}
+    <button class="btn btn-primary btn-lg" onclick="startQuiz()" style="width:100%">
+      ${state.loading ? '<div class="spinner"></div>' : '✦'} Start Adaptive Quiz
+    </button>`;
+}
+
+function setMode(m) { state.quizMode = m; state.quizCategory = ''; state.quizDifficulty = ''; render(); }
+
+async function startQuiz() {
+  if (state.quizMode==='category' && !state.quizCategory) { state.error='Please select a category'; render(); return; }
+  if (state.quizMode==='difficulty' && !state.quizDifficulty) { state.error='Please select a difficulty'; render(); return; }
+  state.loading = true; state.error = null; state.sessionSummary = null; render();
+  try {
+    const data = await api('POST', '/quiz/start', {
+      mode: state.quizMode,
+      category_filter: state.quizCategory || null,
+      difficulty_filter: state.quizDifficulty || null,
+      num_questions: state.quizNumQ,
+    });
+    state.session = { id: data.session_id, numQ: data.num_questions };
+    state.currentQuestion = data.first_question;
+    state.selectedAnswer = null; state.feedback = null;
+    state.questionsAsked = 0; state.questionsTotal = data.num_questions;
+    state.view = 'quiz'; state.loading = false;
+    render();
+  } catch(e) {
+    state.error = e.message; state.loading = false; render();
+  }
+}
+
+function renderQuestion() {
+  const q = state.currentQuestion;
+  const prog = state.questionsAsked / state.questionsTotal * 100;
+
+  return `<div class="page"><div class="quiz-wrap">
+    <div class="quiz-header">
+      <span style="font-size:13px;color:var(--ink3);font-family:var(--mono)">${state.questionsAsked+1} / ${state.questionsTotal}</span>
+      <div class="quiz-progress-bar"><div class="quiz-progress-fill" style="width:${prog}%"></div></div>
+      <button class="btn btn-ghost btn-sm" onclick="endSession()">End</button>
+    </div>
+
+    <div class="quiz-meta">
+      <span class="quiz-tag cat">📂 ${q.category}</span>
+      <span class="quiz-tag diff">${'★'.repeat(q.difficulty)}${'☆'.repeat(4-q.difficulty)} Difficulty ${q.difficulty}</span>
+      <span class="quiz-tag eig tooltip">EIG: ${q.eig_score.toFixed(3)}
+        <span class="tooltip-text">Expected Information Gain — higher = more informative question</span>
+      </span>
+    </div>
+
+    <div class="card" style="margin-bottom:20px">
+      <div style="font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-bottom:8px">What does this mean?</div>
+      <div class="quiz-term">${q.term_name}</div>
+      ${q.root ? `<div style="font-size:12px;color:var(--ink3);font-style:italic">Etymology: ${q.root}</div>` : ''}
+    </div>
+
+    <div class="quiz-options" id="options">
+      ${q.options.map((opt,i) => {
+        let cls = 'quiz-option';
+        if (state.selectedAnswer !== null) {
+          if (opt === q.correct && opt === state.selectedAnswer) cls += ' selected-correct';
+          else if (opt === state.selectedAnswer && opt !== q.correct) cls += ' selected-wrong';
+          else if (opt === q.correct) cls += ' reveal-correct';
+        }
+        return `<button class="${cls}" data-opt="${i}" ${state.selectedAnswer!==null?'disabled':''} onclick="selectAnswer('${CSS.escape(opt)}','${CSS.escape(q.correct)}')">${opt}</button>`;
+      }).join('')}
+    </div>
+
+    ${state.feedback ? renderFeedback() : ''}
+
+    ${state.feedback ? `
+      <div style="text-align:center">
+        <button class="btn btn-primary btn-lg" onclick="nextQuestion()">
+          ${state.loading ? '<div class="spinner"></div>' : state.questionsAsked+1 >= state.questionsTotal ? 'View Results ✦' : 'Next Question →'}
+        </button>
+      </div>` : ''}
+  </div></div>`;
+}
+
+async function selectAnswer(selected, correct) {
+  if (state.selectedAnswer !== null) return;
+  const startTime = Date.now();
+  state.selectedAnswer = selected;
+  state.loading = true; render();
+
+  try {
+    const q = state.currentQuestion;
+    const data = await api('POST', '/quiz/answer', {
+      session_id: state.session.id,
+      term_id: q.term_id,
+      selected_answer: selected,
+      response_time_ms: Date.now() - startTime,
+    });
+    state.feedback = data.feedback;
+    state.questionsAsked++;
+    if (data.session_complete) {
+      state.sessionSummary = data.session_summary;
+      state.nextQuestion = null;
+    } else {
+      state.nextQuestion = data.next_question;
+    }
+    state.loading = false;
+    render();
+  } catch(e) {
+    state.error = e.message; state.loading = false; render();
+  }
+}
+
+function renderFeedback() {
+  const fb = state.feedback;
+  return `<div class="feedback-card ${fb.is_correct?'correct':'wrong'}">
+    <div class="feedback-title">${fb.is_correct ? '✓ Correct!' : '✗ Incorrect'}</div>
+    <div class="feedback-def">${fb.correct_answer}</div>
+    <div class="feedback-pills">
+      ${fb.mnemonic ? `<span class="feedback-pill mnemonic">💡 ${fb.mnemonic}</span>` : ''}
+      ${fb.root ? `<span class="feedback-pill root">📚 ${fb.root}</span>` : ''}
+      ${(fb.related_terms||[]).map(r => `<span class="feedback-pill related">→ ${r}</span>`).join('')}
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <span class="entropy-chip">Δ entropy: ${fb.entropy_delta > 0 ? '+' : ''}${fb.entropy_delta.toFixed(4)} bits</span>
+      <span class="entropy-chip">Belief: ${(fb.belief_after*100).toFixed(0)}%</span>
+    </div>
+  </div>`;
+}
+
+function nextQuestion() {
+  if (state.sessionSummary) { render(); return; }
+  state.currentQuestion = state.nextQuestion;
+  state.selectedAnswer = null; state.feedback = null; state.nextQuestion = null;
+  render();
+}
+
+function endSession() {
+  state.session = null; state.currentQuestion = null;
+  state.feedback = null; state.sessionSummary = null; state.selectedAnswer = null;
+  state.view = 'quiz'; render();
+}
+
+function renderSessionSummary() {
+  const s = state.sessionSummary;
+  if (!s) return '';
+  const acc = s.accuracy;
+  return `<div class="page"><div class="summary-wrap">
+    <div class="summary-score">${acc}%</div>
+    <div class="summary-label">${s.correct_answers} of ${s.questions_asked} correct</div>
+    <div class="summary-chips">
+      <span class="summary-chip chip-teal">Mastery: ${s.overall_mastery}%</span>
+      <span class="summary-chip chip-violet">Entropy: ${s.entropy_end?.toFixed(3)} bits</span>
+      <span class="summary-chip chip-amber">Info gained: ${s.total_information_gained?.toFixed(3)} bits</span>
+    </div>
+    <div class="card" style="text-align:left;margin-bottom:24px">
+      <div class="section-title">Focus Areas</div>
+      ${s.weakest_areas.map(a => `<div class="weak-area">📉 ${a.category} — ${a.mastery}% mastery</div>`).join('')}
+    </div>
+    <div style="display:flex;gap:12px;justify-content:center">
+      <button class="btn btn-primary btn-lg" onclick="endSession();goto('quiz')">New Session</button>
+      <button class="btn btn-ghost btn-lg" onclick="state.sessionSummary=null;endSession();loadProgress()">View Progress</button>
+    </div>
+  </div></div>`;
+}
+
+// ── Progress Page ──────────────────────────────────────────────────────
+async function loadProgress() {
+  state.view = 'progress'; state.loading = true; render();
+  try {
+    state.overview = await api('GET', '/progress/overview');
+    state.knowledgeMap = await api('GET', '/progress/knowledge-map');
+    state.loading = false; render();
+  } catch(e) { state.error = e.message; state.loading = false; render(); }
+}
+
+function renderProgressPage() {
+  const ov = state.overview;
+  if (!ov) return `<div class="page"><div class="loading-full"><div class="spinner"></div></div></div>`;
+
+  return `<div class="page"><div class="page-wide">
+    <div class="dash-header">
+      <h1>Knowledge Progress</h1>
+      <p>Bayesian belief state across all ${ov.stats.terms_total} medical terms — updated after every answer.</p>
+    </div>
+    <div class="tab-bar">
+      <button class="tab ${state.progressTab==='overview'?'active':''}" onclick="state.progressTab='overview';render()">Overview</button>
+      <button class="tab ${state.progressTab==='map'?'active':''}" onclick="state.progressTab='map';render()">Knowledge Map</button>
+      <button class="tab ${state.progressTab==='history'?'active':''}" onclick="loadSessionHistory()">Session History</button>
+    </div>
+    ${state.progressTab === 'overview' ? renderProgressOverview(ov) : ''}
+    ${state.progressTab === 'map' ? renderKnowledgeMap() : ''}
+    ${state.progressTab === 'history' ? renderSessionHistory() : ''}
+  </div></div>`;
+}
+
+function renderProgressOverview(ov) {
+  const s = ov.stats;
+  return `
+    <div class="stats-grid">
+      <div class="stat-card accent-teal"><div class="stat-label">Overall Mastery</div><div class="stat-value">${s.overall_mastery}%</div><div class="stat-sub">${s.terms_tested}/${s.terms_total} terms tested</div></div>
+      <div class="stat-card accent-amber"><div class="stat-label">Accuracy</div><div class="stat-value">${s.overall_accuracy}%</div><div class="stat-sub">${s.total_correct} / ${s.total_questions} correct</div></div>
+      <div class="stat-card"><div class="stat-label">Sessions</div><div class="stat-value">${s.total_sessions}</div><div class="stat-sub">${s.streak_days} day streak</div></div>
+      <div class="stat-card accent-violet"><div class="stat-label">Entropy</div><div class="stat-value" style="font-size:20px;font-family:var(--mono)">${s.current_entropy.toFixed(4)}</div><div class="stat-sub">bits of uncertainty</div></div>
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="section-title">Category Mastery</div>
+        <div class="mastery-grid">
+          ${Object.entries(ov.category_mastery).map(([cat,data]) => `
+            <div class="mastery-item">
+              <div class="mastery-cat">${cat}</div>
+              <div class="mastery-bar-wrap"><div class="mastery-bar" style="width:${data.mastery_score}%;background:${masteryColor(data.mastery_score)}"></div></div>
+              <div class="mastery-pct">${data.mastery_score}%</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+      <div class="card">
+        <div class="section-title">Weakest Terms</div>
+        ${ov.weak_terms.slice(0,8).map(t => `
+          <div class="term-row">
+            <div><div class="term-name">${t.term}</div><div class="term-cat">${t.category} · ★${t.difficulty}</div></div>
+            <span class="mastery-pill ${t.mastery<35?'mp-low':t.mastery<65?'mp-mid':'mp-high'}">${t.mastery}%</span>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="section-title">Strongest Terms</div>
+        ${ov.strong_terms.slice(0,8).map(t => `
+          <div class="term-row">
+            <div><div class="term-name">${t.term}</div><div class="term-cat">${t.category}</div></div>
+            <span class="mastery-pill mp-high">${t.mastery}%</span>
+          </div>
+        `).join('')}
+      </div>
+      <div class="card">
+        <div class="section-title">Session Accuracy Trend</div>
+        ${ov.accuracy_trend.length ? `
+          <div style="display:flex;flex-direction:column;gap:8px">
+            ${ov.accuracy_trend.slice().reverse().map(s => `
+              <div style="display:flex;align-items:center;gap:10px">
+                <div style="font-size:11px;color:var(--ink3);font-family:var(--mono);min-width:72px">${new Date(s.date).toLocaleDateString()}</div>
+                <div style="flex:1;height:10px;background:var(--border);border-radius:5px;overflow:hidden">
+                  <div style="height:100%;width:${s.accuracy}%;background:${masteryColor(s.accuracy)};border-radius:5px"></div>
+                </div>
+                <div style="font-family:var(--mono);font-size:12px;font-weight:600;min-width:36px;color:${masteryColor(s.accuracy)}">${s.accuracy}%</div>
+              </div>
+            `).join('')}
+          </div>
+        ` : '<div class="empty">No sessions yet</div>'}
+      </div>
+    </div>`;
+}
+
+function renderKnowledgeMap() {
+  const km = state.knowledgeMap;
+  if (!km) return `<div class="loading-full"><div class="spinner"></div></div>`;
+
+  // Group by category
+  const byCategory = {};
+  km.terms.forEach(t => { byCategory[t.category] = byCategory[t.category] || []; byCategory[t.category].push(t); });
+
+  return `
+    <div class="card" style="margin-bottom:24px">
+      <div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap">
+        <div><div class="stat-label">Overall Entropy</div><div style="font-family:var(--mono);font-size:18px;color:var(--violet)">${km.overall_entropy.toFixed(4)} bits</div></div>
+        <div><div class="stat-label">Overall Mastery</div><div style="font-size:18px;color:var(--teal);font-weight:600">${km.overall_mastery}%</div></div>
+        <div style="flex:1;text-align:right">
+          <div style="font-size:12px;color:var(--ink3)">Belief legend:</div>
+          <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:4px">
+            <span class="mastery-pill mp-low">0–35% Unknown</span>
+            <span class="mastery-pill mp-mid">35–65% Learning</span>
+            <span class="mastery-pill mp-high">65–100% Known</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    ${Object.entries(byCategory).map(([cat, terms]) => `
+      <div class="card" style="margin-bottom:16px">
+        <div class="section-title" style="margin-bottom:12px">${cat}</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px">
+          ${terms.map(t => `
+            <div style="border:1px solid var(--border);border-radius:var(--r);padding:8px 12px;min-width:140px;background:${t.mastery>=65?'var(--green-light)':t.mastery>=35?'var(--amber-light)':'var(--red-light)'}">
+              <div style="font-size:13px;font-weight:500;color:var(--ink)">${t.term}</div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px">
+                <span style="font-size:10px;color:var(--ink3)">${t.tested?'Tested':'Untested'}</span>
+                <span class="mastery-pill ${t.mastery<35?'mp-low':t.mastery<65?'mp-mid':'mp-high'}" style="font-size:10px">${t.mastery}%</span>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `).join('')}`;
+}
+
+async function loadSessionHistory() {
+  state.progressTab = 'history'; render();
+  if (state.sessionHistory) return;
+  try {
+    state.sessionHistory = await api('GET', '/progress/sessions?limit=30');
+    render();
+  } catch(e) { state.error = e.message; render(); }
+}
+
+function renderSessionHistory() {
+  const sh = state.sessionHistory;
+  if (!sh) return `<div class="loading-full"><div class="spinner"></div></div>`;
+  if (!sh.sessions.length) return `<div class="empty">No completed sessions yet.</div>`;
+  return `
+    <div class="card">
+      <div class="section-title">All Sessions (${sh.total})</div>
+      ${sh.sessions.map(s => `
+        <div class="session-row">
+          <div class="session-date">${new Date(s.started_at).toLocaleDateString()}</div>
+          <div class="session-mode">${s.mode.charAt(0).toUpperCase()+s.mode.slice(1)} ${s.category_filter?'· '+s.category_filter:''}</div>
+          <div style="font-size:12px;color:var(--ink3);font-family:var(--mono)">${s.questions_asked} Q</div>
+          <div style="font-size:11px;color:var(--violet);font-family:var(--mono)">Δ${s.information_gained.toFixed(3)} bits</div>
+          <div class="session-acc ${s.accuracy>=75?'acc-good':s.accuracy>=50?'acc-ok':'acc-bad'}">${s.accuracy}%</div>
+        </div>
+      `).join('')}
+    </div>`;
+}
+
+// ── Leaderboard ────────────────────────────────────────────────────────
+async function loadLeaderboard() {
+  state.view = 'leaderboard'; state.loading = true; render();
+  try {
+    state.leaderboard = await api('GET', '/progress/leaderboard', null, true);
+    state.loading = false; render();
+  } catch(e) { state.error = e.message; state.loading = false; render(); }
+}
+
+function renderLeaderboardPage() {
+  const lb = state.leaderboard;
+  if (!lb) return `<div class="page"><div class="loading-full"><div class="spinner"></div></div></div>`;
+  return `<div class="page"><div class="page-center">
+    <div class="dash-header">
+      <h1>Leaderboard</h1>
+      <p>Ranked by overall knowledge mastery score across all ${state.overview?.stats?.terms_total||50} medical terms.</p>
+    </div>
+    <div class="card">
+      <table class="lb-table">
+        <thead>
+          <tr>
+            <th>#</th><th>User</th><th>Role</th><th>Mastery</th><th>Accuracy</th><th>Sessions</th><th>Entropy</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${lb.leaderboard.map(u => `
+            <tr>
+              <td><div class="lb-rank ${u.rank<=3?'top':''}">${u.rank<=3?['🥇','🥈','🥉'][u.rank-1]:u.rank}</div></td>
+              <td><div class="lb-user">${u.full_name||u.username} ${u.username===state.user?.username?'<span class="tag tag-green">You</span>':''}</div></td>
+              <td><div class="lb-role">${u.role}</div></td>
+              <td><div class="lb-score">${u.overall_mastery}%</div></td>
+              <td><div style="font-family:var(--mono);font-size:13px">${u.accuracy}%</div></td>
+              <td><div style="font-size:13px;color:var(--ink3)">${u.total_sessions}</div></td>
+              <td><div style="font-family:var(--mono);font-size:12px;color:var(--violet)">${u.entropy.toFixed(3)}</div></td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+  </div></div>`;
+}
+
+function bindPage() {
+  // Nothing extra needed — all events are inline onclick
+}
+
+// ── Boot ───────────────────────────────────────────────────────────────
+loadAuth();
+if (state.token && state.user) {
+  state.view = 'dashboard';
+  render();
+  loadDashboard();
+} else {
+  state.view = 'auth';
+  render();
+}
+</script>
+</body>
+</html>

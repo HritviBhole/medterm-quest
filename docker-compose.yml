@@ -1,0 +1,49 @@
+version: "3.9"
+
+services:
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: medterm-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - SECRET_KEY=${SECRET_KEY:-medterm-secret-key-change-in-production}
+      - DATABASE_URL=${DATABASE_URL:-sqlite:///./medterm.db}
+      - ENV=${ENV:-development}
+    volumes:
+      - ./backend:/app
+      - medterm-db:/app/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    networks:
+      - medterm-net
+
+  frontend:
+    image: nginx:alpine
+    container_name: medterm-frontend
+    ports:
+      - "3000:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html:ro
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - medterm-net
+
+volumes:
+  medterm-db:
+
+networks:
+  medterm-net:
+    driver: bridge
