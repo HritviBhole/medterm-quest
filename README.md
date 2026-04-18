@@ -3,6 +3,7 @@
 **Greedy Entropy Maximization for Medical Lexical Constraint Satisfaction**
 *Cognitive Computing & Natural Language Processing*
 
+MedTermQuest models medical terminology learning as a lexical constraint satisfaction problem, where the system infers which terms a user knows based on their answers. It maintains a Bayesian belief distribution over all terms and updates it after each response. Using Shannon entropy, the system measures uncertainty in the user’s knowledge state and applies greedy entropy maximization to select the next question that provides the highest expected information gain. This ensures each question reduces uncertainty as efficiently as possible, allowing the system to converge quickly to an accurate representation of the user’s knowledge.
 ---
 
 ## What is this?
