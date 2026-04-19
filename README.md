@@ -303,4 +303,3 @@ The ORM handles all schema creation automatically on first run.
 | Frontend | Vanilla HTML/CSS/JS (no framework) |
 | Containerization | Docker + Docker Compose |
 | Reverse proxy | Nginx |
-

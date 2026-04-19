@@ -3,995 +3,716 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>MedTermQuest — Adaptive Medical NLP Learning</title>
+<title>MedTermQuest</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Mono:wght@400;500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <style>
 :root{
-  --cream:#faf8f5;--ink:#1a1612;--ink2:#3d3830;--ink3:#7a7268;
-  --red:#c0392b;--red-light:#fdf0ee;--red-mid:#e8a09a;
-  --teal:#0d6b6b;--teal-light:#e8f4f4;--teal-mid:#7fbfbf;
-  --amber:#b8860b;--amber-light:#fdf8e8;--amber-mid:#d4af67;
-  --violet:#4a2d8a;--violet-light:#f0ecf9;--violet-mid:#9980c8;
-  --green:#1a6b3a;--green-light:#e8f4ec;--green-mid:#7fbfa0;
-  --border:#e5e0d8;--border2:#cec8be;
-  --r:8px;--r2:14px;--r3:20px;
-  --shadow:0 1px 3px rgba(26,22,18,.08),0 4px 16px rgba(26,22,18,.04);
-  --shadow2:0 4px 12px rgba(26,22,18,.12),0 12px 40px rgba(26,22,18,.08);
-  --mono:'DM Mono',monospace;
-  --serif:'DM Serif Display',serif;
-  --sans:'Inter',sans-serif;
+  --ink:var(--color-text-primary);--ink2:var(--color-text-secondary);--ink3:var(--color-text-tertiary);
+  --bg:var(--color-background-primary);--bg2:var(--color-background-secondary);--bg3:var(--color-background-tertiary);
+  --b:var(--color-border-tertiary);--b2:var(--color-border-secondary);
+  --teal:#0F6E56;--teal-bg:#E1F5EE;--teal-b:#5DCAA5;--teal-dk:#085041;
+  --red:#A32D2D;--red-bg:#FCEBEB;--red-b:#F09595;--red-dk:#501313;
+  --grn:#3B6D11;--grn-bg:#EAF3DE;--grn-b:#97C459;--grn-dk:#173404;
+  --amb:#854F0B;--amb-bg:#FAEEDA;--amb-b:#EF9F27;--amb-dk:#412402;
+  --pur:#534AB7;--pur-bg:#EEEDFE;--pur-b:#AFA9EC;--pur-dk:#26215C;
+  --r:8px;--rl:12px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:var(--sans);background:var(--cream);color:var(--ink);min-height:100vh;line-height:1.6}
-button{cursor:pointer;font-family:var(--sans)}
-input{font-family:var(--sans)}
-a{color:inherit;text-decoration:none}
+body{font-family:'Inter',sans-serif;background:#f5f5f0;color:#1a1a1a;min-height:100vh}
+button{cursor:pointer;font-family:'Inter',sans-serif}input{font-family:'Inter',sans-serif}
+.nav{background:#fff;border-bottom:1px solid #e5e0d8;padding:0 20px;display:flex;align-items:center;height:52px;gap:3px;position:sticky;top:0;z-index:50}
+.logo{font-family:'DM Serif Display',serif;font-size:19px;color:#1a1a1a;margin-right:8px;flex-shrink:0}
+.logo s{color:var(--teal);text-decoration:none;display:inline}
+.nb{padding:5px 11px;border-radius:var(--r);border:none;background:transparent;font-size:12px;color:#555;cursor:pointer}
+.nb:hover,.nb.on{background:var(--teal-bg);color:var(--teal-dk)}.nb.on{font-weight:500}
+.nb-g{background:var(--pur-bg);color:var(--pur-dk)}.nb-g:hover,.nb-g.on{background:var(--pur-b);color:var(--pur-dk)}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:5px;flex-shrink:0}
+.rbadge{font-size:11px;background:var(--teal-bg);color:var(--teal-dk);padding:2px 8px;border-radius:99px;font-weight:500;text-transform:capitalize}
+.page{padding:20px;max-width:880px;margin:0 auto}
+.auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:#f5f5f0}
+.acard{width:100%;max-width:390px;background:#fff;border:1px solid #e5e0d8;border-radius:var(--rl);padding:32px;box-shadow:0 4px 20px rgba(0,0,0,.06)}
+.atabs{display:flex;gap:3px;background:#f5f5f0;border-radius:var(--r);padding:3px;margin-bottom:18px}
+.at{flex:1;padding:7px;text-align:center;border-radius:6px;font-size:13px;font-weight:500;color:#666;background:transparent;border:none;cursor:pointer;transition:all .12s}
+.at.on{background:#fff;color:var(--teal)}
+.fi{width:100%;padding:9px 12px;border:1px solid #ddd;border-radius:var(--r);font-size:14px;background:#fff;color:#1a1a1a;margin-bottom:9px}
+.fi:focus{outline:none;border-color:var(--teal)}
+.fi::placeholder{color:#aaa}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.flbl{font-size:11px;color:#666;display:block;margin-bottom:3px;font-weight:500;letter-spacing:.04em;text-transform:uppercase}
+.pbtn{width:100%;padding:11px;background:var(--teal);color:#fff;border:none;border-radius:var(--r);font-size:14px;font-weight:500;cursor:pointer;margin-top:4px}
+.pbtn:hover{background:var(--teal-dk)}
+.err{background:var(--red-bg);border:1px solid var(--red-b);color:var(--red-dk);padding:10px 14px;border-radius:var(--r);font-size:13px;margin-bottom:12px}
+.card{background:#fff;border:1px solid #e5e0d8;border-radius:var(--rl);padding:18px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:580px){.g2{grid-template-columns:1fr}}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+@media(max-width:580px){.g4{grid-template-columns:repeat(2,1fr)}}
+.met{background:#f5f5f0;border-radius:var(--r);padding:13px}
+.ml{font-size:10px;color:#777;margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em;font-weight:500}
+.mv{font-size:20px;font-weight:500}.mv.t{color:var(--teal)}.mv.p{color:var(--pur)}.mv.a{color:var(--amb)}.mv.g{color:var(--grn)}
+.ms{font-size:10px;color:#aaa;margin-top:2px}
+.sec{font-size:14px;font-weight:500;color:#1a1a1a;margin-bottom:12px}
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:500}
+.bt{background:var(--teal-bg);color:var(--teal-dk)}.ba{background:var(--amb-bg);color:var(--amb-dk)}.bp{background:var(--pur-bg);color:var(--pur-dk);font-family:'DM Mono',monospace}.bgn{background:var(--grn-bg);color:var(--grn-dk)}.br{background:var(--red-bg);color:var(--red-dk)}
+.brow{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #f0ede8}
+.brow:last-child{border-bottom:none}
+.bcat{font-size:11px;color:#777;width:95px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.btrk{flex:1;height:5px;background:#f0ede8;border-radius:3px;overflow:hidden}
+.bfil{height:100%;border-radius:3px;transition:width .5s ease}
+.bpct{font-size:10px;font-family:'DM Mono',monospace;color:#888;width:30px;text-align:right}
+.gbtn{padding:8px 16px;background:transparent;color:#666;border:1px solid #ccc;border-radius:var(--r);font-size:13px;cursor:pointer}
+.gbtn:hover{border-color:var(--teal-b);color:var(--teal)}
+.sep{height:1px;background:#f0ede8;margin:14px 0}
+.opt{width:100%;text-align:left;padding:10px 14px;margin-bottom:7px;border-radius:var(--r);border:1px solid #ddd;background:#fff;font-size:13px;color:#1a1a1a;cursor:pointer;line-height:1.5;transition:all .12s}
+.opt:hover:not([disabled]){border-color:var(--teal-b);background:var(--teal-bg);color:var(--teal-dk)}
+.opt.oc{border-color:var(--grn-b);background:var(--grn-bg);color:var(--grn-dk)}
+.opt.ow{border-color:var(--red-b);background:var(--red-bg);color:var(--red-dk)}
+.opt.or_{border-color:var(--grn-b);background:var(--grn-bg);color:var(--grn-dk);opacity:.45}
+.opt[disabled]{cursor:not-allowed}
+.fb{border-radius:var(--r);padding:13px 15px;margin-bottom:14px}
+.fb.ok{background:var(--grn-bg);border:1px solid var(--grn-b)}
+.fb.bad{background:var(--red-bg);border:1px solid var(--red-b)}
+.fb-t{font-size:14px;font-weight:500;margin-bottom:5px}
+.fb.ok .fb-t{color:var(--grn-dk)}.fb.bad .fb-t{color:var(--red-dk)}
+.fb-b{font-size:13px;color:#444;margin-bottom:9px;line-height:1.6}
+.pills{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:7px}
+.pm{background:var(--amb-bg);color:var(--amb-dk);padding:2px 7px;border-radius:99px;font-size:10px}
+.pr_{background:var(--teal-bg);color:var(--teal-dk);padding:2px 7px;border-radius:99px;font-size:10px}
+.pe{background:var(--pur-bg);color:var(--pur-dk);padding:2px 7px;border-radius:99px;font-size:10px;font-family:'DM Mono',monospace}
+.pb{height:3px;background:#eee;border-radius:2px;overflow:hidden;margin-bottom:14px}
+.pf{height:100%;background:var(--teal);border-radius:2px;transition:width .4s}
+.term-d{font-size:24px;font-weight:500;color:var(--teal);margin-bottom:2px;font-family:'DM Serif Display',serif}
+.term-r{font-size:11px;color:#aaa;font-style:italic;margin-bottom:14px}
 
-/* ── Layout ── */
-.app{min-height:100vh;display:flex;flex-direction:column}
-.nav{background:#fff;border-bottom:1px solid var(--border);padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:100}
-.nav-logo{font-family:var(--serif);font-size:22px;color:var(--ink);display:flex;align-items:center;gap:8px}
-.nav-logo .dot{color:var(--red)}
-.nav-right{display:flex;align-items:center;gap:12px}
-.nav-user{font-size:13px;color:var(--ink3);display:flex;align-items:center;gap:8px}
-.nav-badge{background:var(--teal-light);color:var(--teal);font-size:11px;padding:2px 8px;border-radius:99px;font-weight:500;text-transform:capitalize}
-.page{flex:1;padding:32px}
-.page-center{max-width:960px;margin:0 auto}
-.page-wide{max-width:1200px;margin:0 auto}
-
-/* ── Buttons ── */
-.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:var(--r);font-size:14px;font-weight:500;border:none;transition:all .15s}
-.btn-primary{background:var(--teal);color:#fff}.btn-primary:hover{background:#0a5858}
-.btn-danger{background:var(--red);color:#fff}.btn-danger:hover{background:#a93226}
-.btn-ghost{background:none;border:1px solid var(--border2);color:var(--ink2)}.btn-ghost:hover{border-color:var(--teal);color:var(--teal)}
-.btn-sm{padding:6px 14px;font-size:13px}
-.btn-lg{padding:13px 28px;font-size:15px;border-radius:var(--r2)}
-.btn:disabled{opacity:.45;cursor:not-allowed}
-
-/* ── Cards ── */
-.card{background:#fff;border:1px solid var(--border);border-radius:var(--r2);padding:24px;box-shadow:var(--shadow)}
-.card-sm{padding:16px;border-radius:var(--r)}
-
-/* ── Auth ── */
-.auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--cream);padding:24px}
-.auth-card{width:100%;max-width:440px;background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:40px;box-shadow:var(--shadow2)}
-.auth-logo{text-align:center;margin-bottom:32px}
-.auth-logo h1{font-family:var(--serif);font-size:32px;color:var(--ink)}
-.auth-logo p{font-size:13px;color:var(--ink3);margin-top:4px}
-.auth-tabs{display:flex;background:var(--cream);border-radius:var(--r);padding:3px;margin-bottom:28px}
-.auth-tab{flex:1;padding:8px;text-align:center;border-radius:6px;font-size:14px;font-weight:500;color:var(--ink3);background:none;border:none;transition:all .15s}
-.auth-tab.active{background:#fff;color:var(--teal);box-shadow:var(--shadow)}
-.form-group{margin-bottom:18px}
-.form-label{display:block;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3);margin-bottom:6px}
-.form-input{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--r);font-size:14px;color:var(--ink);background:#fff;transition:border-color .15s}
-.form-input:focus{outline:none;border-color:var(--teal)}
-.form-input::placeholder{color:var(--ink3)}
-.form-error{font-size:12px;color:var(--red);margin-top:4px}
-.form-select{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--r);font-size:14px;color:var(--ink);background:#fff;appearance:none}
-.auth-submit{width:100%;padding:12px;background:var(--teal);color:#fff;border:none;border-radius:var(--r);font-size:15px;font-weight:600;margin-top:8px;transition:background .15s}
-.auth-submit:hover{background:#0a5858}
-
-/* ── Dashboard ── */
-.dash-header{margin-bottom:32px}
-.dash-header h1{font-family:var(--serif);font-size:30px;color:var(--ink)}
-.dash-header p{color:var(--ink3);font-size:15px;margin-top:4px}
-.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px}
-@media(max-width:768px){.stats-grid{grid-template-columns:repeat(2,1fr)}}
-.stat-card{background:#fff;border:1px solid var(--border);border-radius:var(--r2);padding:20px}
-.stat-label{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-bottom:8px}
-.stat-value{font-family:var(--serif);font-size:30px;color:var(--ink);line-height:1}
-.stat-sub{font-size:12px;color:var(--ink3);margin-top:4px}
-.stat-card.accent-teal .stat-value{color:var(--teal)}
-.stat-card.accent-red .stat-value{color:var(--red)}
-.stat-card.accent-amber .stat-value{color:var(--amber)}
-.stat-card.accent-violet .stat-value{color:var(--violet)}
-
-/* ── Category Mastery ── */
-.mastery-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
-@media(max-width:600px){.mastery-grid{grid-template-columns:1fr}}
-.mastery-item{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--cream);border-radius:var(--r);border:1px solid var(--border)}
-.mastery-cat{font-size:13px;font-weight:500;color:var(--ink);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.mastery-bar-wrap{flex:2;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
-.mastery-bar{height:100%;border-radius:3px;transition:width .6s ease}
-.mastery-pct{font-size:12px;font-weight:600;color:var(--ink2);min-width:34px;text-align:right;font-family:var(--mono)}
-
-/* ── Quiz ── */
-.quiz-wrap{max-width:720px;margin:0 auto}
-.quiz-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
-.quiz-progress-bar{height:4px;background:var(--border);border-radius:2px;overflow:hidden;flex:1;margin:0 16px}
-.quiz-progress-fill{height:100%;background:var(--teal);border-radius:2px;transition:width .4s ease}
-.quiz-meta{display:flex;gap:16px;margin-bottom:20px}
-.quiz-tag{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:500;padding:4px 10px;border-radius:99px}
-.quiz-tag.cat{background:var(--teal-light);color:var(--teal)}
-.quiz-tag.diff{background:var(--amber-light);color:var(--amber)}
-.quiz-tag.eig{background:var(--violet-light);color:var(--violet);font-family:var(--mono)}
-.quiz-question{font-family:var(--serif);font-size:22px;color:var(--ink);line-height:1.4;margin-bottom:8px}
-.quiz-term{font-size:32px;font-weight:400;font-family:var(--serif);color:var(--teal);display:block;margin-bottom:20px}
-.quiz-options{display:flex;flex-direction:column;gap:10px;margin-bottom:24px}
-.quiz-option{padding:14px 18px;border:2px solid var(--border);border-radius:var(--r2);font-size:14px;color:var(--ink2);background:#fff;text-align:left;transition:all .15s;line-height:1.5}
-.quiz-option:hover:not(:disabled){border-color:var(--teal);color:var(--teal);background:var(--teal-light)}
-.quiz-option.selected-correct{border-color:var(--green);background:var(--green-light);color:var(--green)}
-.quiz-option.selected-wrong{border-color:var(--red);background:var(--red-light);color:var(--red)}
-.quiz-option.reveal-correct{border-color:var(--green);background:var(--green-light);color:var(--green);opacity:.7}
-.quiz-option:disabled{cursor:not-allowed}
-.feedback-card{border-radius:var(--r2);padding:20px;margin-bottom:20px;animation:slide-in .3s ease}
-.feedback-card.correct{background:var(--green-light);border:1px solid var(--green-mid)}
-.feedback-card.wrong{background:var(--red-light);border:1px solid var(--red-mid)}
-.feedback-title{font-weight:600;font-size:16px;margin-bottom:8px;display:flex;align-items:center;gap:8px}
-.feedback-card.correct .feedback-title{color:var(--green)}
-.feedback-card.wrong .feedback-title{color:var(--red)}
-.feedback-def{font-size:14px;color:var(--ink2);margin-bottom:12px;line-height:1.6}
-.feedback-pills{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
-.feedback-pill{font-size:11px;padding:3px 8px;border-radius:99px;font-weight:500}
-.feedback-pill.mnemonic{background:var(--amber-light);color:var(--amber)}
-.feedback-pill.root{background:var(--violet-light);color:var(--violet)}
-.feedback-pill.related{background:var(--teal-light);color:var(--teal)}
-.entropy-chip{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;padding:4px 10px;border-radius:99px;background:var(--violet-light);color:var(--violet);border:1px solid var(--violet-mid)}
-@keyframes slide-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-
-/* ── Start Screen ── */
-.start-hero{text-align:center;padding:40px 20px}
-.start-hero h1{font-family:var(--serif);font-size:42px;color:var(--ink);margin-bottom:12px}
-.start-hero p{font-size:16px;color:var(--ink3);max-width:520px;margin:0 auto 32px}
-.mode-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:32px}
-@media(max-width:600px){.mode-grid{grid-template-columns:1fr}}
-.mode-card{background:#fff;border:2px solid var(--border);border-radius:var(--r2);padding:20px;text-align:left;transition:all .2s;cursor:pointer}
-.mode-card:hover,.mode-card.selected{border-color:var(--teal);background:var(--teal-light)}
-.mode-card.selected .mode-icon{background:var(--teal)}
-.mode-icon{width:40px;height:40px;border-radius:var(--r);background:var(--border);display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:12px;transition:background .2s}
-.mode-title{font-weight:600;font-size:15px;color:var(--ink);margin-bottom:4px}
-.mode-desc{font-size:13px;color:var(--ink3);line-height:1.5}
-.config-row{display:flex;gap:16px;margin-bottom:24px}
-.config-row > *{flex:1}
-
-/* ── Progress page ── */
-.section-title{font-family:var(--serif);font-size:20px;color:var(--ink);margin-bottom:16px}
-.two-col{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px}
-@media(max-width:700px){.two-col{grid-template-columns:1fr}}
-.session-row{padding:14px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
-.session-row:last-child{border-bottom:none}
-.session-date{font-size:12px;color:var(--ink3);font-family:var(--mono);min-width:90px}
-.session-mode{font-size:13px;font-weight:500;color:var(--ink2);flex:1}
-.session-acc{font-family:var(--mono);font-size:13px;font-weight:600}
-.acc-good{color:var(--green)}.acc-ok{color:var(--amber)}.acc-bad{color:var(--red)}
-.term-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)}
-.term-row:last-child{border-bottom:none}
-.term-name{font-size:13px;font-weight:500;color:var(--ink);flex:1}
-.term-cat{font-size:11px;color:var(--ink3)}
-.mastery-pill{font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;font-family:var(--mono)}
-.mp-low{background:var(--red-light);color:var(--red)}
-.mp-mid{background:var(--amber-light);color:var(--amber)}
-.mp-high{background:var(--green-light);color:var(--green)}
-.entropy-bar-section{margin-bottom:24px}
-.entropy-timeline{display:flex;flex-direction:column;gap:4px;max-height:180px;overflow-y:auto}
-.entropy-tick{display:flex;align-items:center;gap:10px;font-size:11px;color:var(--ink3);font-family:var(--mono)}
-.entropy-tick-bar{height:14px;background:var(--violet-mid);border-radius:2px;min-width:4px;opacity:.7}
-
-/* ── Leaderboard ── */
-.lb-table{width:100%;border-collapse:collapse}
-.lb-table th{text-align:left;padding:10px 12px;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3);border-bottom:2px solid var(--border)}
-.lb-table td{padding:12px;border-bottom:1px solid var(--border);font-size:14px}
-.lb-table tr:last-child td{border-bottom:none}
-.lb-rank{font-family:var(--serif);font-size:18px;color:var(--ink3)}
-.lb-rank.top{color:var(--amber)}
-.lb-user{font-weight:500;color:var(--ink)}
-.lb-role{font-size:11px;color:var(--ink3);text-transform:capitalize}
-.lb-score{font-family:var(--mono);font-weight:600;color:var(--teal)}
-
-/* ── Session summary ── */
-.summary-wrap{max-width:600px;margin:0 auto;text-align:center;padding:40px 20px}
-.summary-score{font-family:var(--serif);font-size:64px;color:var(--teal);line-height:1;margin-bottom:8px}
-.summary-label{font-size:16px;color:var(--ink3);margin-bottom:32px}
-.summary-chips{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin-bottom:32px}
-.summary-chip{font-size:13px;padding:6px 14px;border-radius:99px;font-family:var(--mono)}
-.chip-teal{background:var(--teal-light);color:var(--teal)}
-.chip-violet{background:var(--violet-light);color:var(--violet)}
-.chip-amber{background:var(--amber-light);color:var(--amber)}
-.weak-area{background:var(--red-light);border:1px solid var(--red-mid);border-radius:var(--r);padding:10px 14px;margin-bottom:8px;font-size:13px;color:var(--red);font-weight:500}
-
-/* ── Misc ── */
-.divider{height:1px;background:var(--border);margin:24px 0}
-.empty{text-align:center;color:var(--ink3);font-size:14px;padding:40px 0}
-.tag{font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;letter-spacing:.04em;text-transform:uppercase}
-.tag-red{background:var(--red-light);color:var(--red)}
-.tag-green{background:var(--green-light);color:var(--green)}
-.tag-amber{background:var(--amber-light);color:var(--amber)}
-.spinner{display:inline-block;width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--teal);border-radius:50%;animation:spin .6s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-.loading-full{min-height:200px;display:flex;align-items:center;justify-content:center;gap:12px;color:var(--ink3)}
-.alert{padding:12px 16px;border-radius:var(--r);font-size:14px;margin-bottom:16px}
-.alert-error{background:var(--red-light);color:var(--red);border:1px solid var(--red-mid)}
-.alert-info{background:var(--teal-light);color:var(--teal);border:1px solid var(--teal-mid)}
-.tab-bar{display:flex;gap:4px;background:var(--cream);border-radius:var(--r);padding:3px;margin-bottom:24px}
-.tab{flex:1;padding:8px 12px;text-align:center;border-radius:6px;font-size:13px;font-weight:500;color:var(--ink3);background:none;border:none;transition:all .15s}
-.tab.active{background:#fff;color:var(--teal);box-shadow:var(--shadow)}
-.tooltip{position:relative;cursor:help}
-.tooltip-text{display:none;position:absolute;bottom:calc(100% + 4px);left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;font-size:11px;padding:4px 8px;border-radius:4px;white-space:nowrap;z-index:99}
-.tooltip:hover .tooltip-text{display:block}
+/* GAME */
+.game-wrap{max-width:620px;margin:0 auto}
+.clue-card{background:var(--pur-bg);border:1px solid var(--pur-b);border-radius:var(--rl);padding:16px 20px;margin-bottom:18px;position:relative}
+.clue-label{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--pur-dk);margin-bottom:5px}
+.clue-text{font-size:14px;color:var(--pur-dk);line-height:1.6}
+.clue-cat{position:absolute;top:12px;right:14px;font-size:10px;font-weight:500;background:#fff;color:var(--pur-dk);padding:2px 7px;border-radius:99px;border:1px solid var(--pur-b)}
+.clue-hint{font-size:11px;color:var(--pur);margin-top:7px;font-style:italic;display:none}
+.clue-hint.show{display:block}
+.game-grid{display:flex;flex-direction:column;gap:5px;align-items:center;margin-bottom:16px}
+.game-row{display:flex;gap:4px}
+.gtile{width:42px;height:42px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;font-family:'DM Mono',monospace;text-transform:uppercase;border:2px solid #ddd;background:#fff;color:#1a1a1a;transition:border-color .12s}
+.gtile.filled{border-color:#888;animation:pop .1s ease}
+.gtile.green{background:#538d4e;border-color:#538d4e;color:#fff}
+.gtile.yellow{background:#b59f3b;border-color:#b59f3b;color:#fff}
+.gtile.gray{background:#787c7e;border-color:#787c7e;color:#fff}
+.gtile.cur-pos{border-color:var(--teal)}
+.gtile.reveal{animation:flip .5s ease forwards}
+.gtile.reveal:nth-child(2){animation-delay:.08s}.gtile.reveal:nth-child(3){animation-delay:.16s}
+.gtile.reveal:nth-child(4){animation-delay:.24s}.gtile.reveal:nth-child(5){animation-delay:.32s}
+.gtile.reveal:nth-child(6){animation-delay:.4s}.gtile.reveal:nth-child(7){animation-delay:.48s}
+.gtile.reveal:nth-child(8){animation-delay:.56s}.gtile.reveal:nth-child(9){animation-delay:.64s}
+.gtile.reveal:nth-child(10){animation-delay:.72s}.gtile.reveal:nth-child(11){animation-delay:.80s}
+.gtile.reveal:nth-child(12){animation-delay:.88s}
+.gtile.shake{animation:shake .4s ease}
+@keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.1)}100%{transform:scale(1)}}
+@keyframes flip{0%{transform:rotateX(0)}49%{transform:rotateX(-90deg)}50%{transform:rotateX(-90deg)}100%{transform:rotateX(0)}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-5px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}
+.kbd{display:flex;flex-direction:column;gap:5px;align-items:center;margin-bottom:16px}
+.kbd-row{display:flex;gap:4px}
+.key{min-width:30px;height:44px;padding:0 5px;border-radius:5px;border:none;font-size:11px;font-weight:700;font-family:'DM Mono',monospace;text-transform:uppercase;cursor:pointer;background:#d3d6da;color:#1a1a1a;transition:background .15s,color .15s;display:flex;align-items:center;justify-content:center}
+.key.wide{min-width:48px;font-size:10px}
+.key.green{background:#538d4e;color:#fff}.key.yellow{background:#b59f3b;color:#fff}.key.gray{background:#787c7e;color:#999}
+.key.hint-hi{background:var(--pur-b);color:var(--pur-dk);border:1px solid var(--pur)}
+.pos-entropy{display:flex;gap:4px;align-items:flex-end;height:44px;margin-bottom:4px;justify-content:center}
+.pos-bar-wrap{display:flex;flex-direction:column;align-items:center;gap:2px}
+.pos-bar{width:42px;border-radius:3px 3px 0 0;min-height:2px;transition:height .4s ease,background .3s}
+.pos-lbl{font-size:9px;font-family:'DM Mono',monospace;color:#aaa}
+.pos-entropy-label{text-align:center;font-size:10px;color:#aaa;margin-bottom:12px;font-family:'DM Mono',monospace}
+.hint-box{background:var(--pur-bg);border:1px solid var(--pur-b);border-radius:var(--r);padding:10px 14px;margin-bottom:14px;font-size:13px;color:var(--pur-dk);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.hint-word{font-family:'DM Mono',monospace;font-size:16px;font-weight:700;letter-spacing:.15em;color:var(--pur-dk)}
+.opener-chip{display:inline-flex;align-items:center;gap:7px;background:var(--amb-bg);border:1px solid var(--amb-b);border-radius:99px;padding:5px 13px;font-size:12px;color:var(--amb-dk);cursor:pointer;transition:all .12s}
+.opener-chip:hover{background:var(--amb-b)}
+.opener-word{font-family:'DM Mono',monospace;font-weight:700;font-size:12px;letter-spacing:.1em}
+.solved-banner{background:var(--grn-bg);border:1px solid var(--grn-b);border-radius:var(--rl);padding:18px 22px;text-align:center;margin-bottom:14px;animation:fadeup .3s ease}
+.failed-banner{background:var(--red-bg);border:1px solid var(--red-b);border-radius:var(--rl);padding:18px 22px;text-align:center;margin-bottom:14px;animation:fadeup .3s ease}
+.banner-word{font-family:'DM Mono',monospace;font-size:20px;font-weight:700;letter-spacing:.18em;margin-bottom:4px}
+.solved-banner .banner-word{color:var(--grn-dk)}.failed-banner .banner-word{color:var(--red-dk)}
+.banner-sub{font-size:12px;color:#555;margin-bottom:12px}
+@keyframes fadeup{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.len-btn{padding:4px 10px;border-radius:99px;border:1px solid #ddd;background:transparent;font-size:11px;color:#666;cursor:pointer;transition:all .12s}
+.len-btn.on{background:var(--teal-bg);border-color:var(--teal-b);color:var(--teal-dk);font-weight:500}
+.gh-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #f0ede8}
+.gh-row:last-child{border-bottom:none}
+.gh-word{font-family:'DM Mono',monospace;font-size:12px;font-weight:700;letter-spacing:.08em;color:#1a1a1a;min-width:90px}
+.gh-res{font-size:10px;font-weight:500;padding:2px 7px;border-radius:99px}
+.gh-ok{background:var(--grn-bg);color:var(--grn-dk)}.gh-fail{background:var(--red-bg);color:var(--red-dk)}
+.sr{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #f0ede8}
+.sr:last-child{border-bottom:none}
+.lb-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f0ede8}
+.lb-row:last-child{border-bottom:none}
+.km-item{padding:4px 8px;border-radius:var(--r);font-size:10px;font-weight:500;border:1px solid;margin:2px;display:inline-block}
+.tabs{display:flex;gap:3px;background:#f5f5f0;border-radius:var(--r);padding:3px;margin-bottom:16px}
+.tab{flex:1;padding:7px;text-align:center;border-radius:6px;font-size:12px;font-weight:500;color:#666;background:transparent;border:none;cursor:pointer;transition:all .12s}
+.tab.on{background:#fff;color:var(--teal)}
 </style>
 </head>
 <body>
-<div id="app"></div>
-
+<div id="R"></div>
 <script>
-// ═══════════════════════════════════════════════════════════════════════
-//  MedTermQuest — Complete Frontend (Vanilla JS SPA)
-//  No build tools required — runs entirely in the browser.
-//  Connects to FastAPI backend at API_BASE.
-// ═══════════════════════════════════════════════════════════════════════
+const TERMS=[
+ {id:"cv1",term:"Tachycardia",cat:"Cardiovascular",d:1,def:"Heart rate exceeding 100 beats per minute at rest.",root:"tachy- (fast) + cardia (heart)",mn:"Too Aggressively Crazy Heartbeat, Yikes",rel:["Bradycardia","Arrhythmia"]},
+ {id:"cv2",term:"Bradycardia",cat:"Cardiovascular",d:1,def:"Heart rate below 60 beats per minute at rest.",root:"brady- (slow) + cardia (heart)",mn:"Beats Rather Ardently, Down",rel:["Tachycardia","Heart block"]},
+ {id:"cv3",term:"Myocardial Infarction",cat:"Cardiovascular",d:2,def:"Death of heart muscle due to prolonged ischemia from blocked blood supply.",root:"myo+cardia+infarction",mn:"MI = Muscle Is dying",rel:["Angina","Atherosclerosis"]},
+ {id:"cv4",term:"Hypertension",cat:"Cardiovascular",d:1,def:"Persistently elevated blood pressure at or above 130/80 mmHg.",root:"hyper- (above) + tension (pressure)",mn:"Silent killer — no symptoms, big damage",rel:["Stroke","Renal failure"]},
+ {id:"cv5",term:"Atrial Fibrillation",cat:"Cardiovascular",d:3,def:"Chaotic atrial electrical signals causing an irregular, often rapid heart rate.",root:"atrial + fibrillation (rapid quivering)",mn:"AFib = Atria Firing in Bedlam",rel:["Stroke","Heart failure"]},
+ {id:"ne1",term:"Aphasia",cat:"Neurology",d:2,def:"Loss or impairment of language ability due to brain damage.",root:"a- (without) + phasia (speech)",mn:"Broca's = expressive; Wernicke's = receptive",rel:["Stroke","Dysarthria"]},
+ {id:"ne2",term:"Epilepsy",cat:"Neurology",d:2,def:"Chronic neurological disorder with recurrent unprovoked seizures.",root:"Greek: epilepsia (to seize upon)",mn:"Electrical storm in the brain",rel:["Seizure","EEG"]},
+ {id:"ne3",term:"Ischemic Stroke",cat:"Neurology",d:2,def:"Sudden loss of brain function due to interrupted blood supply from a clot.",root:"ischemia (deficient blood) + stroke",mn:"FAST: Face, Arm, Speech, Time",rel:["TIA","Hemorrhagic stroke"]},
+ {id:"ne4",term:"Parkinson's Disease",cat:"Neurology",d:3,def:"Progressive neurodegeneration from dopaminergic neuron loss in the substantia nigra.",root:"Named after James Parkinson (1817)",mn:"TRAP: Tremor, Rigidity, Akinesia, Postural instability",rel:["Dopamine","Lewy body dementia"]},
+ {id:"ne5",term:"Syncope",cat:"Neurology",d:2,def:"Transient loss of consciousness from cerebral hypoperfusion, with spontaneous recovery.",root:"Greek: synkope (cutting short)",mn:"Sudden Yet Normal Cardiovascular event",rel:["Orthostatic hypotension","Arrhythmia"]},
+ {id:"ne6",term:"Meningitis",cat:"Neurology",d:2,def:"Inflammation of the meninges surrounding brain and spinal cord, usually infectious.",root:"meninges (membranes) + -itis (inflammation)",mn:"Classic triad: Headache, Fever, Neck stiffness",rel:["Encephalitis","Kernig sign"]},
+ {id:"re1",term:"Pneumonia",cat:"Respiratory",d:1,def:"Infection of lung parenchyma causing inflammation and impaired gas exchange.",root:"pneumo- (lung) + -ia (condition)",mn:"CURB-65 severity scoring",rel:["Bronchitis","ARDS"]},
+ {id:"re2",term:"Asthma",cat:"Respiratory",d:1,def:"Chronic inflammatory airway disease causing reversible bronchospasm and wheezing.",root:"Greek: asthma (panting)",mn:"Wheeze = Airways Squeezed",rel:["COPD","Eosinophilia"]},
+ {id:"re3",term:"Pulmonary Embolism",cat:"Respiratory",d:3,def:"Blockage of pulmonary arteries by a blood clot, usually originating from DVT.",root:"pulmonary (lung) + embolism (blockage)",mn:"Virchow's triad: Stasis, Hypercoagulability, Endothelial injury",rel:["DVT","Anticoagulation"]},
+ {id:"re4",term:"Dyspnea",cat:"Respiratory",d:1,def:"Subjective sensation of difficult or uncomfortable breathing.",root:"dys- (difficult) + pnea (breathing)",mn:"DYStressing Breaths",rel:["Tachypnea","Hypoxia"]},
+ {id:"en1",term:"Diabetes Mellitus",cat:"Endocrinology",d:1,def:"Metabolic disorder of chronic hyperglycemia from defective insulin secretion or action.",root:"diabetes (siphon) + mellitus (honey-sweet)",mn:"Type 1=NO insulin; Type 2=RESISTANT",rel:["Insulin","HbA1c"]},
+ {id:"en2",term:"Hypothyroidism",cat:"Endocrinology",d:2,def:"Underactive thyroid causing insufficient thyroid hormone and slowed metabolism.",root:"hypo- (under) + thyroid + -ism",mn:"SLOW: Sluggish, Low energy, Obesity, Weight gain",rel:["TSH","Hashimoto's"]},
+ {id:"en3",term:"Hyperthyroidism",cat:"Endocrinology",d:2,def:"Overactive thyroid producing excess hormone, causing accelerated metabolism.",root:"hyper- (over) + thyroid + -ism",mn:"FAST: heat intolerance, weight loss, tremor",rel:["Graves' disease","Thyroid storm"]},
+ {id:"ph1",term:"Pharmacokinetics",cat:"Pharmacology",d:3,def:"Study of how the body processes a drug: Absorption, Distribution, Metabolism, Excretion.",root:"pharmakon (drug) + kinetics (movement)",mn:"ADME = A Drug Moves Everywhere",rel:["Bioavailability","Half-life"]},
+ {id:"ph2",term:"Half-life",cat:"Pharmacology",d:2,def:"Time for plasma drug concentration to decrease by 50%, determining dosing frequency.",root:"half (50%) + life (duration)",mn:"5 half-lives = drug essentially cleared",rel:["Pharmacokinetics","Clearance"]},
+ {id:"ph3",term:"Antagonist",cat:"Pharmacology",d:2,def:"Drug that binds a receptor and blocks its response without activating it.",root:"anti- (against) + agonist (actor)",mn:"Blocks the door, won't open it",rel:["Agonist","IC50"]},
+ {id:"pa1",term:"Neoplasia",cat:"Pathology",d:2,def:"Abnormal uncoordinated cell growth persisting after cessation of the initial stimulus.",root:"neo- (new) + plasia (formation)",mn:"New Evil growth",rel:["Carcinoma","Metastasis"]},
+ {id:"pa2",term:"Metastasis",cat:"Pathology",d:2,def:"Spread of cancer cells from the primary tumor to distant sites.",root:"meta- (beyond) + stasis (standing)",mn:"Cancer's escape route",rel:["Invasion","Angiogenesis"]},
+ {id:"pa3",term:"Ischemia",cat:"Pathology",d:2,def:"Insufficient blood supply to tissue causing oxygen deprivation with risk of infarction.",root:"iskhein (hold back) + haima (blood)",mn:"Reversible if brief; infarction if prolonged",rel:["Infarction","Hypoxia"]},
+ {id:"pa4",term:"Inflammation",cat:"Pathology",d:1,def:"Protective vascular and cellular response to injury or infection.",root:"Latin: inflammatio (setting on fire)",mn:"PRISH: Pain, Redness, Immobility, Swelling, Heat",rel:["Cytokines","Edema"]},
+ {id:"mi1",term:"Sepsis",cat:"Microbiology",d:2,def:"Life-threatening organ dysfunction from dysregulated host response to infection.",root:"Greek: sepsis (putrefaction)",mn:"qSOFA: Resp>22, Altered mentation, SBP<100",rel:["Septic shock","Bacteremia"]},
+ {id:"mi2",term:"Antibiotic Resistance",cat:"Microbiology",d:3,def:"Bacterial ability to survive antibiotics via mutations or acquired resistance genes.",root:"anti-(against)+bios(life)+resistance",mn:"ESKAPE pathogens — the resistant superbugs",rel:["MRSA","Beta-lactamase"]},
+ {id:"im1",term:"Anaphylaxis",cat:"Immunology",d:2,def:"Severe rapid systemic IgE-mediated hypersensitivity causing life-threatening compromise.",root:"ana- (against) + phylaxis (protection)",mn:"Epinephrine IM = first-line always",rel:["IgE","Mast cells"]},
+ {id:"im2",term:"Autoimmune Disease",cat:"Immunology",d:2,def:"Condition where the immune system mistakenly attacks the body's own healthy cells.",root:"auto- (self) + immune (defense)",mn:"Friendly fire — immune attacks self",rel:["Lupus","Rheumatoid arthritis"]},
+ {id:"he1",term:"Anemia",cat:"Hematology",d:1,def:"Reduction in hemoglobin below normal, reducing oxygen-carrying capacity.",root:"an- (without) + haima (blood)",mn:"TIRED: Tachycardia, pallor, reduced tolerance, dyspnea",rel:["Iron deficiency","B12 deficiency"]},
+ {id:"ps1",term:"Major Depressive Disorder",cat:"Psychiatry",d:2,def:"Mood disorder with 5+ depressive symptoms for 2+ weeks including depressed mood or anhedonia.",root:"Latin: deprimere (press down)",mn:"SIG E CAPS — 9 diagnostic criteria",rel:["Bipolar disorder","SSRIs"]},
+ {id:"ga1",term:"Cirrhosis",cat:"Gastroenterology",d:2,def:"End-stage liver disease with irreversible hepatic fibrosis and disrupted architecture.",root:"Greek: kirrhos (tawny/orange) + -osis",mn:"Child-Pugh: Bilirubin, Albumin, PT, Encephalopathy, Ascites",rel:["Portal hypertension","HCC"]},
+];
 
-const API_BASE = 'http://localhost:8000';
+const GW=[
+ {id:"gw01",word:"SEPSIS",len:6,cat:"Microbiology",diff:2,clue:"Life-threatening organ dysfunction from dysregulated host response to infection.",hint:"Greek: sepsis (putrefaction)"},
+ {id:"gw02",word:"ANEMIA",len:6,cat:"Hematology",diff:1,clue:"Reduction in hemoglobin below normal, reducing the oxygen-carrying capacity of blood.",hint:"an- (without) + haima (blood)"},
+ {id:"gw03",word:"ASTHMA",len:6,cat:"Respiratory",diff:1,clue:"Chronic inflammatory airway disease causing reversible bronchospasm and wheezing.",hint:"Greek: asthma (panting)"},
+ {id:"gw04",word:"APHASIA",len:7,cat:"Neurology",diff:2,clue:"Loss or impairment of language ability due to damage to language-processing brain regions.",hint:"a- (without) + phasia (speech)"},
+ {id:"gw05",word:"SYNCOPE",len:7,cat:"Neurology",diff:2,clue:"Transient loss of consciousness from cerebral hypoperfusion with spontaneous recovery.",hint:"Greek: synkope (cutting short)"},
+ {id:"gw06",word:"DYSPNEA",len:7,cat:"Respiratory",diff:1,clue:"Subjective sensation of difficult, labored, or uncomfortable breathing.",hint:"dys- (difficult) + pnea (breathing)"},
+ {id:"gw07",word:"ISCHEMIA",len:8,cat:"Pathology",diff:2,clue:"Insufficient blood supply to tissue causing oxygen deprivation with risk of infarction.",hint:"iskhein (hold back) + haima (blood)"},
+ {id:"gw08",word:"EPILEPSY",len:8,cat:"Neurology",diff:2,clue:"Chronic neurological disorder characterized by recurrent unprovoked seizures.",hint:"Greek: epilepsia (to seize upon)"},
+ {id:"gw09",word:"MENINGES",len:8,cat:"Anatomy",diff:2,clue:"Three protective membranes surrounding the brain and spinal cord: dura, arachnoid, and pia mater.",hint:"Greek: meninx (membrane)"},
+ {id:"gw10",word:"DIABETES",len:8,cat:"Endocrinology",diff:1,clue:"Metabolic disorder of chronic hyperglycemia from defective insulin secretion or action.",hint:"diabetes (siphon) — named for excessive urination"},
+ {id:"gw11",word:"NEOPLASIA",len:9,cat:"Pathology",diff:2,clue:"Abnormal uncoordinated cell growth persisting after cessation of the initiating stimulus.",hint:"neo- (new) + plasia (formation)"},
+ {id:"gw12",word:"PNEUMONIA",len:9,cat:"Respiratory",diff:1,clue:"Infection of lung parenchyma causing inflammation and impaired gas exchange.",hint:"pneumo- (lung) + -ia (condition)"},
+ {id:"gw13",word:"CIRRHOSIS",len:9,cat:"Gastroenterology",diff:2,clue:"End-stage liver disease with irreversible hepatic fibrosis and disrupted architecture.",hint:"Greek: kirrhos (tawny/orange) + -osis"},
+ {id:"gw14",word:"METASTASIS",len:10,cat:"Pathology",diff:2,clue:"Spread of cancer cells from the primary tumor to distant sites via blood or lymphatics.",hint:"meta- (beyond) + stasis (standing)"},
+ {id:"gw15",word:"ANTAGONIST",len:10,cat:"Pharmacology",diff:2,clue:"Drug that binds a receptor and blocks its biological response without activating it.",hint:"anti- (against) + agonist (actor)"},
+ {id:"gw16",word:"MENINGITIS",len:10,cat:"Neurology",diff:2,clue:"Inflammation of the meninges surrounding brain and spinal cord, usually caused by infection.",hint:"meninges (membranes) + -itis (inflammation)"},
+ {id:"gw17",word:"TACHYCARDIA",len:11,cat:"Cardiovascular",diff:1,clue:"Heart rate exceeding 100 beats per minute at rest.",hint:"tachy- (fast) + cardia (heart)"},
+ {id:"gw18",word:"BRADYCARDIA",len:11,cat:"Cardiovascular",diff:1,clue:"Heart rate below 60 beats per minute at rest.",hint:"brady- (slow) + cardia (heart)"},
+ {id:"gw19",word:"ANAPHYLAXIS",len:11,cat:"Immunology",diff:2,clue:"Severe rapid systemic hypersensitivity reaction causing life-threatening airway and circulatory compromise.",hint:"ana- (against) + phylaxis (protection)"},
+ {id:"gw20",word:"INFLAMMATION",len:12,cat:"Pathology",diff:1,clue:"Protective vascular and cellular response to tissue injury or infection.",hint:"Latin: inflammatio (setting on fire)"},
+ {id:"gw21",word:"HYPERTENSION",len:12,cat:"Cardiovascular",diff:1,clue:"Persistently elevated blood pressure at or above 130/80 mmHg.",hint:"hyper- (above) + tension (pressure)"},
+];
 
-// ── State ─────────────────────────────────────────────────────────────
-let state = {
-  view: 'auth',           // auth | dashboard | quiz | progress | leaderboard
-  authTab: 'login',
-  user: null,
-  token: null,
-  loading: false,
-  error: null,
-  // Dashboard
-  overview: null,
-  // Quiz
-  quizMode: 'adaptive',
-  quizCategory: '',
-  quizDifficulty: '',
-  quizNumQ: 10,
-  session: null,
-  currentQuestion: null,
-  selectedAnswer: null,
-  feedback: null,
-  sessionSummary: null,
-  questionsAsked: 0,
-  questionsTotal: 10,
-  // Progress
-  progressTab: 'overview',
-  sessionHistory: null,
-  leaderboard: null,
-  knowledgeMap: null,
-};
+const DP={1:.80,2:.60,3:.40,4:.25},POK=.92,PFL=.18,CC=.12;
+const CATS=[...new Set(TERMS.map(t=>t.cat))].sort();
+const bE=p=>{p=Math.max(1e-9,Math.min(1-1e-9,p));return-(p*Math.log2(p)+(1-p)*Math.log2(1-p));};
+const aE=b=>Object.values(b).reduce((s,p)=>s+bE(p),0)/Object.values(b).length;
+const initB=()=>Object.fromEntries(TERMS.map(t=>[t.id,DP[t.d]||.5]));
+const om=b=>+(Object.values(b).reduce((s,v)=>s+v,0)/Object.keys(b).length*100).toFixed(1);
+const mc=p=>p>=65?'#3B6D11':p>=35?'#854F0B':'#A32D2D';
+const mb=p=>p>=65?'#EAF3DE':p>=35?'#FAEEDA':'#FCEBEB';
+const mbr=p=>p>=65?'#97C459':p>=35?'#EF9F27':'#F09595';
 
-// ── API Helpers ───────────────────────────────────────────────────────
-async function api(method, path, body = null, requireAuth = true) {
-  const headers = { 'Content-Type': 'application/json' };
-  if (requireAuth && state.token) headers['Authorization'] = `Bearer ${state.token}`;
-  const opts = { method, headers };
-  if (body) opts.body = JSON.stringify(body);
-  try {
-    const r = await fetch(API_BASE + path, opts);
-    const data = await r.json();
-    if (!r.ok) throw new Error(data.detail || 'API error');
-    return data;
-  } catch (e) {
-    throw e;
-  }
+function bUpd(b,id,ok){
+  const nb={...b},p=nb[id],lk=ok?POK:1-POK,ln=ok?PFL:1-PFL,ev=lk*p+ln*(1-p);
+  nb[id]=ev>0?(lk*p)/ev:p;
+  const tm=TERMS.find(t=>t.id===id);
+  if(tm){const d=nb[id]-p;TERMS.filter(t=>t.cat===tm.cat&&t.id!==id).forEach(t=>{nb[t.id]=Math.max(.01,Math.min(.99,nb[t.id]+d*CC));});}
+  return nb;
+}
+function calcEig(b,id){
+  const p=b[id],pok=POK*p+PFL*(1-p),bok=bUpd(b,id,true),bfl=bUpd(b,id,false);
+  return aE(b)-(pok*aE(bok)+(1-pok)*aE(bfl));
+}
+function selNext(b,asked){
+  const cs=TERMS.filter(t=>!asked.has(t.id));if(!cs.length)return null;
+  let best=cs[0],bs=-1;
+  cs.forEach(t=>{const s=calcEig(b,t.id)+(1-Math.abs(b[t.id]-.5)*2)*.03;if(s>bs){bs=s;best=t;}});
+  return{term:best,eig:+bs.toFixed(4)};
+}
+function catM(b){const o={};CATS.forEach(c=>{const ids=TERMS.filter(t=>t.cat===c).map(t=>t.id);o[c]=+((ids.reduce((s,id)=>s+b[id],0)/ids.length)*100).toFixed(1);});return o;}
+function mcq(term){
+  const ok=term.def,pool=TERMS.filter(t=>t.id!==term.id);
+  const sh=a=>[...a].sort(()=>Math.random()-.5);
+  const d=sh(pool.filter(t=>t.cat===term.cat)).slice(0,2).concat(sh(pool.filter(t=>t.cat!==term.cat)).slice(0,1)).map(t=>t.def);
+  return{opts:sh([...d.slice(0,3),ok]),ok};
 }
 
-async function apiForm(path, formData) {
-  const r = await fetch(API_BASE + path, {
-    method: 'POST',
-    body: formData,
+/* WORDLE ENGINE */
+function getPat(guess,answer){
+  const n=guess.length,pat=Array(n).fill('gray');
+  const ac=answer.split(''),gc=guess.split('');
+  for(let i=0;i<n;i++)if(gc[i]===ac[i]){pat[i]='green';ac[i]=gc[i]=null;}
+  for(let i=0;i<n;i++){if(!gc[i])continue;const j=ac.indexOf(gc[i]);if(j>=0){pat[i]='yellow';ac[j]=null;}}
+  return pat;
+}
+function filterPool(pool,guess,pattern){return pool.filter(w=>{const p=getPat(guess,w);return p.every((c,i)=>c===pattern[i]);});}
+function wEntropy(guess,pool){
+  const counts={};
+  pool.forEach(w=>{const k=getPat(guess,w).join('');counts[k]=(counts[k]||0)+1;});
+  const n=pool.length;
+  return Object.values(counts).reduce((h,c)=>{const p=c/n;return h-p*Math.log2(p);},0);
+}
+function bestGuess(pool){
+  if(pool.length<=2)return pool[0];
+  let best=pool[0],bs=-1;
+  pool.forEach(w=>{const s=wEntropy(w,pool)+(pool.includes(w)?.1:0);if(s>bs){bs=s;best=w;}});
+  return best;
+}
+function posEntropy(pool,wlen){
+  return Array.from({length:wlen},(_,pos)=>{
+    const counts={};pool.forEach(w=>{if(pos<w.length){const ch=w[pos];counts[ch]=(counts[ch]||0)+1;}});
+    const n=pool.length;
+    return +Object.values(counts).reduce((h,c)=>{const p=c/n;return p>0?h-p*Math.log2(p):h;},0).toFixed(3);
   });
-  const data = await r.json();
-  if (!r.ok) throw new Error(data.detail || 'Login failed');
-  return data;
+}
+function keyEntropyH(pool){
+  const freq={};pool.forEach(w=>[...new Set(w.split(''))].forEach(ch=>{freq[ch]=(freq[ch]||0)+1;}));
+  const n=pool.length,scores={};
+  Object.entries(freq).forEach(([ch,c])=>{const p=c/n;scores[ch]=p>0?-p*Math.log2(p)+(1-p>0?-(1-p)*Math.log2(1-p):0):0;});
+  return scores;
+}
+const OPENERS={6:'SEPSIS',7:'APHASIA',8:'ISCHEMIA',9:'PNEUMONIA',10:'MENINGITIS',11:'TACHYCARDIA',12:'INFLAMMATION'};
+function selGameWord(beliefs,usedIds,targetLen){
+  const pool=GW.filter(g=>!usedIds.has(g.id)&&(targetLen===0||g.len===targetLen));
+  if(!pool.length)return GW[Math.floor(Math.random()*GW.length)];
+  const wb=pool.map(g=>{
+    const qt=TERMS.find(t=>t.id===g.id||g.word.startsWith(t.term.split(' ')[0].toUpperCase()));
+    return{...g,belief:qt?beliefs[qt.id]:0.5};
+  });
+  wb.sort((a,b)=>a.belief-b.belief+(Math.random()-.5)*.08);
+  return wb[0];
 }
 
-// ── Persistence ───────────────────────────────────────────────────────
-function saveAuth(token, user) {
-  localStorage.setItem('mq_token', token);
-  localStorage.setItem('mq_user', JSON.stringify(user));
-  state.token = token;
-  state.user = user;
-}
+let S={
+  view:'auth',authTab:'login',
+  users:{},user:null,beliefs:{},asked:new Set(),sessions:[],
+  q:null,sel:null,fb:null,qa:0,qt:10,mode:'adaptive',summ:null,_sc:0,_he:0,ptab:'overview',
+  gw:null,gg:[],gc_:'',gstat:'playing',gmx:6,ghint:null,gEtym:false,gUsed:new Set(),gLen:0,ghist:[],
+  err:null,
+};
+function sv(){try{const ud=S.user&&S.users[S.user]?S.users[S.user]:null;if(ud){ud.beliefs=S.beliefs;ud.asked=[...S.asked];ud.sessions=S.sessions;ud.ghist=S.ghist;ud.gUsed=[...S.gUsed];}localStorage.setItem('mtq4',JSON.stringify({users:S.users,user:S.user}));}catch(e){}}
+function ld(){try{const d=JSON.parse(localStorage.getItem('mtq4')||'{}');S.users=d.users||{};S.user=d.user||null;if(S.user&&S.users[S.user]){const ud=S.users[S.user];S.beliefs=ud.beliefs||initB();S.asked=new Set(ud.asked||[]);S.sessions=ud.sessions||[];S.ghist=ud.ghist||[];S.gUsed=new Set(ud.gUsed||[]);}}catch(e){}}
 
-function loadAuth() {
-  state.token = localStorage.getItem('mq_token');
-  const u = localStorage.getItem('mq_user');
-  if (u) state.user = JSON.parse(u);
+function R(){
+  const root=document.getElementById('R');if(!root)return;
+  if(S.view==='auth'){root.innerHTML=rAuth();bAuth();return;}
+  root.innerHTML=rNav()+rMain();
+  if(S.view==='game')setTimeout(()=>document.addEventListener('keydown',kbGlobal),0);
 }
-
-function clearAuth() {
-  localStorage.removeItem('mq_token');
-  localStorage.removeItem('mq_user');
-  state.token = null;
-  state.user = null;
+function kbGlobal(e){
+  if(S.view!=='game'){document.removeEventListener('keydown',kbGlobal);return;}
+  if(S.gstat!=='playing')return;
+  if(e.key==='Enter'){subGuess();return;}
+  if(e.key==='Backspace'){S.gc_=S.gc_.slice(0,-1);upGrid();return;}
+  const ch=e.key.toUpperCase();
+  if(/^[A-Z]$/.test(ch)&&S.gc_.length<S.gw.len){S.gc_+=ch;upGrid();}
 }
-
-// ── Render Engine ─────────────────────────────────────────────────────
-function render() {
-  const app = document.getElementById('app');
-  if (state.view === 'auth') { app.innerHTML = renderAuth(); bindAuth(); return; }
-  app.innerHTML = `${renderNav()}${renderPage()}`;
-  bindPage();
-}
-
-// ── Navigation ─────────────────────────────────────────────────────────
-function renderNav() {
-  return `<nav class="nav">
-    <div class="nav-logo">
-      <span>MedTerm</span><span class="dot">Quest</span>
-    </div>
+function rNav(){
+  return`<nav class="nav">
+    <span class="logo">MedTerm<s>Quest</s></span>
+    ${['dash','quiz','game','progress','leaderboard'].map(v=>`<button class="nb ${v==='game'?'nb-g':''} ${S.view===v?'on':''}" onclick="go('${v}')">${v==='dash'?'Home':v==='quiz'?'Quiz':v==='game'?'MedWordle':v[0].toUpperCase()+v.slice(1)}</button>`).join('')}
     <div class="nav-right">
-      <button class="btn btn-ghost btn-sm ${state.view==='dashboard'?'btn-primary':''}" onclick="goto('dashboard')">Home</button>
-      <button class="btn btn-ghost btn-sm ${state.view==='quiz'?'btn-primary':''}" onclick="goto('quiz')">Quiz</button>
-      <button class="btn btn-ghost btn-sm ${state.view==='progress'?'btn-primary':''}" onclick="loadProgress()">Progress</button>
-      <button class="btn btn-ghost btn-sm ${state.view==='leaderboard'?'btn-primary':''}" onclick="loadLeaderboard()">Leaderboard</button>
-      <div class="nav-user">
-        <span>${state.user?.username || ''}</span>
-        <span class="nav-badge">${state.user?.role || 'student'}</span>
-        <button class="btn btn-ghost btn-sm" onclick="logout()">Sign out</button>
-      </div>
+      <span style="font-size:12px;color:#555">${S.user||''}</span>
+      <span class="rbadge">${S.users[S.user]?.role||'student'}</span>
+      <button class="nb" onclick="logout()">Sign out</button>
     </div>
   </nav>`;
 }
-
-function goto(view) {
-  state.view = view;
-  state.error = null;
-  if (view === 'dashboard' && !state.overview) loadDashboard();
-  render();
+function go(v){S.view=v;S.err=null;if(v==='quiz'){S.summ=null;S.q=null;}if(v==='game'&&!S.gw)startGame(0);R();}
+function rMain(){
+  if(S.view==='dash')return rDash();
+  if(S.view==='quiz')return rQuiz();
+  if(S.view==='game')return rGame();
+  if(S.view==='progress')return rProg();
+  if(S.view==='leaderboard')return rLB();
+  return'';
 }
 
-// ── Auth Page ──────────────────────────────────────────────────────────
-function renderAuth() {
-  return `<div class="auth-wrap">
-    <div class="auth-card">
-      <div class="auth-logo">
-        <h1>MedTerm<span style="color:var(--red)">Quest</span></h1>
-        <p>Adaptive Medical Terminology Learning<br>powered by Greedy Entropy Maximization</p>
+/* AUTH */
+function rAuth(){
+  return`<div class="auth-wrap"><div class="acard">
+    <div style="text-align:center;margin-bottom:18px">
+      <div style="font-family:'DM Serif Display',serif;font-size:26px;color:#1a1a1a">MedTerm<span style="color:var(--teal)">Quest</span></div>
+      <div style="font-size:12px;color:#777;margin-top:4px">Adaptive medical learning · entropy maximization</div>
+    </div>
+    <div class="atabs"><button class="at ${S.authTab==='login'?'on':''}" onclick="S.authTab='login';S.err=null;R()">Sign in</button><button class="at ${S.authTab==='signup'?'on':''}" onclick="S.authTab='signup';S.err=null;R()">Create account</button></div>
+    ${S.err?`<div class="err">${S.err}</div>`:''}
+    ${S.authTab==='login'?`
+      <label class="flbl">Username</label><input class="fi" id="lu" placeholder="username"/>
+      <label class="flbl">Password</label><input class="fi" id="lp" type="password" placeholder="password" style="margin-bottom:12px"/>
+      <button class="pbtn" onclick="doLogin()">Sign in</button>`:`
+      <div class="frow"><div><label class="flbl">Name</label><input class="fi" id="sn" placeholder="Dr. Smith"/></div><div><label class="flbl">Role</label><select class="fi" id="sr"><option value="student">Student</option><option value="resident">Resident</option><option value="attending">Attending</option></select></div></div>
+      <label class="flbl">Username</label><input class="fi" id="su" placeholder="username"/>
+      <label class="flbl">Password</label><input class="fi" id="sp" type="password" placeholder="min 6 chars" style="margin-bottom:12px"/>
+      <button class="pbtn" onclick="doSignup()">Create account</button>`}
+    <div style="text-align:center;font-size:11px;color:#bbb;margin-top:10px">Stored in your browser · no server needed</div>
+  </div></div>`;
+}
+function bAuth(){document.getElementById('lp')?.addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});document.getElementById('sp')?.addEventListener('keydown',e=>{if(e.key==='Enter')doSignup();});}
+function vv(id){return document.getElementById(id)?.value?.trim()||'';}
+function doLogin(){
+  const u=vv('lu'),p=vv('lp');
+  if(!u||!p){S.err='Fill in all fields';R();return;}
+  if(!S.users[u]){S.err='Account not found — create one!';R();return;}
+  if(S.users[u].pw!==p){S.err='Incorrect password';R();return;}
+  S.user=u;const ud=S.users[u];
+  S.beliefs=ud.beliefs&&Object.keys(ud.beliefs).length?ud.beliefs:initB();
+  S.asked=new Set(ud.asked||[]);S.sessions=ud.sessions||[];S.ghist=ud.ghist||[];S.gUsed=new Set(ud.gUsed||[]);
+  S.view='dash';S.err=null;sv();R();
+}
+function doSignup(){
+  const n=vv('sn')||'',ro=vv('sr')||'student',u=vv('su'),p=vv('sp');
+  if(!u||!p){S.err='Username and password required';R();return;}
+  if(p.length<6){S.err='Password needs 6+ characters';R();return;}
+  if(S.users[u]){S.err='Username taken';R();return;}
+  S.users[u]={pw:p,name:n,role:ro,beliefs:initB(),asked:[],sessions:[],ghist:[],gUsed:[]};
+  S.user=u;S.beliefs=S.users[u].beliefs;S.asked=new Set();S.sessions=[];S.ghist=[];S.gUsed=new Set();
+  S.view='dash';S.err=null;sv();R();
+}
+function logout(){sv();S.user=null;S.beliefs={};S.asked=new Set();S.sessions=[];S.ghist=[];S.gUsed=new Set();S.gw=null;S.view='auth';R();}
+
+/* DASHBOARD */
+function rDash(){
+  const cm=catM(S.beliefs),h=+aE(S.beliefs).toFixed(4),ovm=om(S.beliefs);
+  const tq=S.sessions.reduce((s,ss)=>s+ss.q,0),tc=S.sessions.reduce((s,ss)=>s+ss.c,0);
+  const acc=tq?+(tc/tq*100).toFixed(1):0;
+  const ud=S.users[S.user];
+  const gSol=S.ghist.filter(g=>g.solved).length;
+  const weak=TERMS.map(t=>({term:t.term,cat:t.cat,m:+(S.beliefs[t.id]*100).toFixed(1)})).sort((a,b)=>a.m-b.m).slice(0,5);
+  return`<div class="page">
+    <div style="margin-bottom:16px"><div style="font-size:22px;font-weight:500;font-family:'DM Serif Display',serif">Welcome, ${ud?.name||S.user}</div><div style="font-size:12px;color:#666;margin-top:3px">Entropy: <span style="font-family:'DM Mono',monospace;color:var(--pur)">${h} bits</span> · ${TERMS.length-S.asked.size} terms untested</div></div>
+    <div class="g4" style="margin-bottom:14px">
+      <div class="met"><div class="ml">Mastery</div><div class="mv t">${ovm}%</div><div class="ms">${S.asked.size}/${TERMS.length} tested</div></div>
+      <div class="met"><div class="ml">Quiz accuracy</div><div class="mv a">${acc}%</div><div class="ms">${tc}/${tq}</div></div>
+      <div class="met"><div class="ml">MedWordle wins</div><div class="mv g">${gSol}</div><div class="ms">${S.ghist.length} played</div></div>
+      <div class="met"><div class="ml">Entropy</div><div class="mv p" style="font-size:15px;font-family:'DM Mono',monospace">${h}</div></div>
+    </div>
+    <div class="g2" style="margin-bottom:14px">
+      <div class="card"><div class="sec">Category mastery</div>${Object.entries(cm).map(([c,s])=>`<div class="brow"><div class="bcat">${c}</div><div class="btrk"><div class="bfil" style="width:${s}%;background:${mc(s)}"></div></div><div class="bpct">${s}%</div></div>`).join('')}</div>
+      <div class="card"><div class="sec">Focus areas</div>${weak.map(t=>`<div class="brow"><div style="flex:1"><div style="font-size:12px;font-weight:500">${t.term}</div><div style="font-size:10px;color:#aaa">${t.cat}</div></div><span style="font-size:10px;font-weight:500;padding:2px 6px;border-radius:99px;background:${mb(t.m)};color:${mc(t.m)}">${t.m}%</span></div>`).join('')}</div>
+    </div>
+    <div class="card"><div class="sec">Quick start</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="pbtn" style="width:auto;padding:9px 18px" onclick="qStart(10)">Adaptive quiz (10 Q)</button>
+        <button class="gbtn" onclick="qStart(5)">Quick 5</button>
+        <button style="padding:9px 18px;background:var(--pur-bg);color:var(--pur-dk);border:1px solid var(--pur-b);border-radius:var(--r);font-size:13px;font-weight:500;cursor:pointer" onclick="go('game')">Play MedWordle</button>
       </div>
-      <div class="auth-tabs">
-        <button class="auth-tab ${state.authTab==='login'?'active':''}" onclick="switchTab('login')">Sign In</button>
-        <button class="auth-tab ${state.authTab==='signup'?'active':''}" onclick="switchTab('signup')">Create Account</button>
-      </div>
-      ${state.error ? `<div class="alert alert-error">${state.error}</div>` : ''}
-      ${state.authTab === 'login' ? renderLogin() : renderSignup()}
     </div>
   </div>`;
 }
 
-function renderLogin() {
-  return `<form id="login-form">
-    <div class="form-group">
-      <label class="form-label">Email or Username</label>
-      <input class="form-input" name="username" placeholder="Enter your email or username" required/>
+/* QUIZ */
+function rQuiz(){if(S.summ)return rSumm();if(S.q)return rQuestion();return rQStart();}
+function qStart(n){S.qt=n;S.mode='adaptive';startQ();}
+function rQStart(){
+  return`<div class="page"><div style="font-size:22px;font-weight:500;font-family:'DM Serif Display',serif;margin-bottom:4px">Adaptive quiz</div>
+  <div style="font-size:13px;color:#666;margin-bottom:16px">Greedy entropy maximization selects each question to maximally reduce uncertainty about your knowledge state.</div>
+  ${S.err?`<div class="err">${S.err}</div>`:''}
+  <div class="card">
+    <div class="sec">Mode</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px">
+      ${[['adaptive','Adaptive AI','Greedy entropy'],['category','By category','One domain'],['difficulty','By difficulty','One tier']].map(([m,t,d])=>`
+        <div onclick="S.mode='${m}';R()" style="padding:10px;border-radius:var(--r);border:${S.mode===m?'2px solid var(--teal)':'1px solid #ddd'};cursor:pointer;background:${S.mode===m?'var(--teal-bg)':'#fff'}">
+          <div style="font-size:12px;font-weight:500;color:${S.mode===m?'var(--teal-dk)':'#1a1a1a'}">${t}</div>
+          <div style="font-size:10px;color:#aaa;margin-top:2px">${d}</div>
+        </div>`).join('')}
     </div>
-    <div class="form-group">
-      <label class="form-label">Password</label>
-      <input class="form-input" name="password" type="password" placeholder="Your password" required/>
-    </div>
-    <button class="auth-submit" type="submit">${state.loading?'Signing in…':'Sign In'}</button>
-  </form>`;
-}
-
-function renderSignup() {
-  return `<form id="signup-form">
-    <div class="form-group">
-      <label class="form-label">Full Name</label>
-      <input class="form-input" name="full_name" placeholder="Dr. Jane Smith"/>
-    </div>
-    <div style="display:flex;gap:12px">
-      <div class="form-group" style="flex:1">
-        <label class="form-label">Username</label>
-        <input class="form-input" name="username" placeholder="jsmith" required/>
-      </div>
-      <div class="form-group" style="flex:1">
-        <label class="form-label">Role</label>
-        <select class="form-select" name="role">
-          <option value="student">Student</option>
-          <option value="resident">Resident</option>
-          <option value="attending">Attending</option>
-        </select>
-      </div>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Email</label>
-      <input class="form-input" name="email" type="email" placeholder="jane@med.edu" required/>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Password</label>
-      <input class="form-input" name="password" type="password" placeholder="Min. 6 characters" required minlength="6"/>
-    </div>
-    <button class="auth-submit" type="submit">${state.loading?'Creating account…':'Create Account'}</button>
-  </form>`;
-}
-
-function bindAuth() {
-  const lf = document.getElementById('login-form');
-  const sf = document.getElementById('signup-form');
-  if (lf) lf.addEventListener('submit', async e => {
-    e.preventDefault();
-    state.loading = true; state.error = null; render();
-    const fd = new FormData(lf);
-    try {
-      const data = await apiForm('/auth/login', fd);
-      saveAuth(data.access_token, data.user);
-      state.view = 'dashboard'; state.loading = false;
-      loadDashboard();
-    } catch(err) {
-      state.error = err.message; state.loading = false; render();
-    }
-  });
-  if (sf) sf.addEventListener('submit', async e => {
-    e.preventDefault();
-    state.loading = true; state.error = null; render();
-    const fd = new FormData(sf);
-    try {
-      const data = await api('POST', '/auth/signup', {
-        username: fd.get('username'), email: fd.get('email'),
-        password: fd.get('password'), full_name: fd.get('full_name'),
-        role: fd.get('role'),
-      }, false);
-      saveAuth(data.access_token, data.user);
-      state.view = 'dashboard'; state.loading = false;
-      loadDashboard();
-    } catch(err) {
-      state.error = err.message; state.loading = false; render();
-    }
-  });
-}
-
-function switchTab(tab) { state.authTab = tab; state.error = null; render(); }
-
-function logout() {
-  clearAuth();
-  state.view = 'auth'; state.overview = null; state.session = null;
-  state.currentQuestion = null; state.feedback = null; state.sessionSummary = null;
-  render();
-}
-
-// ── Dashboard ──────────────────────────────────────────────────────────
-async function loadDashboard() {
-  state.loading = true; render();
-  try {
-    state.overview = await api('GET', '/progress/overview');
-    state.view = 'dashboard'; state.loading = false; render();
-  } catch(e) {
-    state.error = e.message; state.loading = false; render();
-  }
-}
-
-function renderPage() {
-  if (state.loading) return `<div class="page"><div class="loading-full"><div class="spinner"></div> Loading…</div></div>`;
-  if (state.view === 'dashboard') return renderDashboard();
-  if (state.view === 'quiz') return renderQuizPage();
-  if (state.view === 'progress') return renderProgressPage();
-  if (state.view === 'leaderboard') return renderLeaderboardPage();
-  return '<div class="page"><p>Page not found</p></div>';
-}
-
-function renderDashboard() {
-  const ov = state.overview;
-  if (!ov) return `<div class="page"><div class="page-center">${renderStartPanel()}</div></div>`;
-  const s = ov.stats;
-
-  return `<div class="page"><div class="page-wide">
-    <div class="dash-header">
-      <h1>Welcome back, ${ov.user.full_name || ov.user.username} 👋</h1>
-      <p>Your AI tutor has ${s.terms_total - s.terms_tested} new terms ready to test you on. Current system entropy: <strong style="font-family:var(--mono)">${s.current_entropy.toFixed(3)} bits</strong></p>
-    </div>
-
-    <div class="stats-grid">
-      <div class="stat-card accent-teal">
-        <div class="stat-label">Overall Mastery</div>
-        <div class="stat-value">${s.overall_mastery}%</div>
-        <div class="stat-sub">${s.terms_tested} / ${s.terms_total} terms tested</div>
-      </div>
-      <div class="stat-card accent-amber">
-        <div class="stat-label">Accuracy</div>
-        <div class="stat-value">${s.overall_accuracy}%</div>
-        <div class="stat-sub">${s.total_correct} / ${s.total_questions} correct</div>
-      </div>
-      <div class="stat-card accent-red">
-        <div class="stat-label">Sessions</div>
-        <div class="stat-value">${s.total_sessions}</div>
-        <div class="stat-sub">${s.streak_days} day streak 🔥</div>
-      </div>
-      <div class="stat-card accent-violet">
-        <div class="stat-label">Knowledge Entropy</div>
-        <div class="stat-value" style="font-size:22px;font-family:var(--mono)">${s.current_entropy.toFixed(3)}</div>
-        <div class="stat-sub">bits — lower = more certain</div>
-      </div>
-    </div>
-
-    <div class="two-col">
-      <div class="card">
-        <div class="section-title">Category Mastery</div>
-        <div class="mastery-grid">
-          ${Object.entries(ov.category_mastery).map(([cat, data]) => `
-            <div class="mastery-item">
-              <div class="mastery-cat">${cat}</div>
-              <div class="mastery-bar-wrap"><div class="mastery-bar" style="width:${data.mastery_score}%;background:${masteryColor(data.mastery_score)}"></div></div>
-              <div class="mastery-pct">${data.mastery_score}%</div>
-            </div>
-          `).join('')}
-        </div>
-      </div>
-      <div class="card">
-        <div class="section-title">Terms to Focus On</div>
-        ${ov.weak_terms.map(t => `
-          <div class="term-row">
-            <div>
-              <div class="term-name">${t.term}</div>
-              <div class="term-cat">${t.category} · Difficulty ${t.difficulty}</div>
-            </div>
-            <span class="mastery-pill ${t.mastery < 35 ? 'mp-low' : t.mastery < 65 ? 'mp-mid' : 'mp-high'}">${t.mastery}%</span>
-          </div>
-        `).join('')}
-      </div>
-    </div>
-
-    <div class="card" style="margin-bottom:24px">
-      <div class="section-title">Start a New Session</div>
-      ${renderStartPanel(true)}
-    </div>
-
-    <div class="card">
-      <div class="section-title">Recent Sessions</div>
-      ${ov.recent_sessions.length ? ov.recent_sessions.map(s => `
-        <div class="session-row">
-          <div class="session-date">${new Date(s.started_at).toLocaleDateString()}</div>
-          <div class="session-mode">${s.mode.charAt(0).toUpperCase()+s.mode.slice(1)} ${s.category_filter ? '· '+s.category_filter : ''}</div>
-          <div class="session-acc ${s.accuracy>=75?'acc-good':s.accuracy>=50?'acc-ok':'acc-bad'}">${s.accuracy}% (${s.correct_answers}/${s.questions_asked})</div>
-        </div>
-      `).join('') : '<div class="empty">No sessions yet — start your first quiz!</div>'}
+    <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap">
+      ${S.mode==='category'?`<div style="flex:1"><label class="flbl">Category</label><select class="fi" id="cs" style="margin:0"><option value="">Choose…</option>${CATS.map(c=>`<option value="${c}">${c}</option>`).join('')}</select></div>`:''}
+      ${S.mode==='difficulty'?`<div style="flex:1"><label class="flbl">Difficulty</label><select class="fi" id="ds" style="margin:0"><option value="">Choose…</option><option value="1">1—Basic</option><option value="2">2—Intermediate</option><option value="3">3—Advanced</option></select></div>`:''}
+      <div><label class="flbl">Questions</label><select class="fi" id="ns" style="margin:0;width:auto"><option value="5">5</option><option value="10" selected>10</option><option value="15">15</option></select></div>
+      <button class="pbtn" style="width:auto;padding:10px 18px" onclick="startQ()">Start quiz</button>
     </div>
   </div></div>`;
 }
-
-function masteryColor(pct) {
-  if (pct >= 75) return 'var(--green)';
-  if (pct >= 50) return 'var(--amber)';
-  return 'var(--red)';
+function startQ(){
+  const cs=document.getElementById('cs'),ds=document.getElementById('ds'),ns=document.getElementById('ns');
+  S.qt=parseInt(ns?.value||10);let cf=null,df=null;
+  if(S.mode==='category'){cf=cs?.value||null;if(!cf){S.err='Select a category';R();return;}}
+  if(S.mode==='difficulty'){df=parseInt(ds?.value||0)||null;if(!df){S.err='Select a difficulty';R();return;}}
+  let pool=TERMS.filter(t=>!S.asked.has(t.id));
+  if(cf)pool=pool.filter(t=>t.cat===cf);if(df)pool=pool.filter(t=>t.d===df);
+  if(!pool.length)pool=TERMS.filter(t=>(cf?t.cat===cf:true)&&(df?t.d===df:true));
+  if(!pool.length){S.err='No terms match';R();return;}
+  S.qa=0;S.fb=null;S.sel=null;S.summ=null;S.err=null;S._sc=0;S._he=+aE(S.beliefs).toFixed(4);
+  const sel=selNext(S.beliefs,S.asked);if(!sel){S.err='No questions';R();return;}
+  S.q={...sel.term,mc:mcq(sel.term),eig:sel.eig};R();
 }
-
-// ── Quiz Page ──────────────────────────────────────────────────────────
-function renderQuizPage() {
-  if (state.sessionSummary) return renderSessionSummary();
-  if (state.session && state.currentQuestion) return renderQuestion();
-  return `<div class="page"><div class="page-center">${renderStartPanel()}</div></div>`;
+function rQuestion(){
+  const q=S.q,prog=S.qa/S.qt*100,stars='★'.repeat(q.d)+'☆'.repeat(4-q.d);
+  return`<div class="page">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+      <span style="font-size:11px;font-family:'DM Mono',monospace;color:#aaa">${S.qa+1}/${S.qt}</span>
+      <div class="pb" style="flex:1;margin:0"><div class="pf" style="width:${prog}%"></div></div>
+      <button class="gbtn" style="padding:5px 10px;font-size:11px" onclick="S.q=null;S.summ=null;go('quiz')">End</button>
+    </div>
+    <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:14px">
+      <span class="badge bt">${q.cat}</span>
+      <span class="badge ba">${stars} ${q.d}</span>
+      <span class="badge bp">EIG ${q.eig.toFixed(4)} bits</span>
+    </div>
+    <div class="card" style="margin-bottom:14px">
+      <div style="font-size:10px;color:#aaa;margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em;font-weight:500">Define this term</div>
+      <div class="term-d">${q.term}</div><div class="term-r">${q.root}</div>
+    </div>
+    ${q.mc.opts.map((o,i)=>{let c='opt';if(S.sel!==null){if(o===q.mc.ok&&o===S.sel)c+=' oc';else if(o===S.sel)c+=' ow';else if(o===q.mc.ok)c+=' or_';}return`<button class="${c}" ${S.sel!==null?'disabled':''} onclick="ans(${i})">${o}</button>`;}).join('')}
+    ${S.fb?rFB():''}
+    ${S.fb?`<div style="text-align:center;margin-top:14px"><button class="pbtn" style="width:auto;padding:10px 20px" onclick="nextQ()">${S.qa>=S.qt?'View results':'Next question'}</button></div>`:''}
+  </div>`;
 }
+function ans(i){
+  if(S.sel!==null)return;
+  const o=S.q.mc.opts[i];S.sel=o;const ok=o===S.q.mc.ok;
+  const hb=+aE(S.beliefs).toFixed(4);S.beliefs=bUpd(S.beliefs,S.q.id,ok);
+  const ha=+aE(S.beliefs).toFixed(4);S.asked.add(S.q.id);S.qa++;if(ok)S._sc++;
+  S.fb={ok,hb,ha,d:+(hb-ha).toFixed(4),bl:+(S.beliefs[S.q.id]*100).toFixed(0)};
+  if(S.qa>=S.qt)mkSumm();sv();R();
+}
+function rFB(){const f=S.fb,q=S.q;return`<div class="fb ${f.ok?'ok':'bad'}"><div class="fb-t">${f.ok?'Correct!':'Incorrect'}</div><div class="fb-b">${q.def}</div><div class="pills"><span class="pm">${q.mn}</span>${q.rel.map(r=>`<span class="pr_">${r}</span>`).join('')}<span class="pe">H: ${f.hb.toFixed(3)} → ${f.ha.toFixed(3)}</span><span class="pe">belief ${f.bl}%</span></div></div>`;}
+function nextQ(){if(S.summ){go('progress');return;}S.sel=null;S.fb=null;const sel=selNext(S.beliefs,S.asked);if(!sel){mkSumm();R();return;}S.q={...sel.term,mc:mcq(sel.term),eig:sel.eig};R();}
+function mkSumm(){
+  const acc=S.qa?+(S._sc/S.qa*100).toFixed(1):0,he=+aE(S.beliefs).toFixed(4),ig=+(S._he-he).toFixed(4);
+  S.sessions.unshift({id:Date.now(),date:new Date().toLocaleDateString(),q:S.qa,c:S._sc,acc,eS:S._he,eE:he,info:ig});
+  const cm=catM(S.beliefs);
+  S.summ={acc,q:S.qa,c:S._sc,he,ig,mastery:om(S.beliefs),weak:Object.entries(cm).sort((a,b)=>a[1]-b[1]).slice(0,3)};sv();
+}
+function rSumm(){const ss=S.summ;return`<div class="page"><div style="text-align:center;padding:1.5rem 0"><div style="font-family:'DM Serif Display',serif;font-size:52px;color:var(--teal);line-height:1;margin-bottom:4px">${ss.acc}%</div><div style="font-size:13px;color:#666;margin-bottom:14px">${ss.c} of ${ss.q} correct</div><div style="display:flex;justify-content:center;gap:7px;flex-wrap:wrap;margin-bottom:16px"><span class="badge bt">Mastery ${ss.mastery}%</span><span class="badge bp">Entropy ${ss.he} bits</span><span class="badge ba">+${ss.ig} bits gained</span></div><div class="card" style="text-align:left;max-width:360px;margin:0 auto 16px"><div class="sec">Improve next</div>${ss.weak.map(([c,s])=>`<div class="brow"><span style="flex:1;font-size:12px">${c}</span><span style="font-size:11px;font-weight:500;color:var(--red)">${s}%</span></div>`).join('')}</div><div style="display:flex;gap:8px;justify-content:center"><button class="pbtn" style="width:auto;padding:9px 18px" onclick="S.summ=null;S.q=null;go('quiz')">New session</button><button class="gbtn" onclick="go('progress')">Progress</button><button style="padding:9px 18px;background:var(--pur-bg);color:var(--pur-dk);border:1px solid var(--pur-b);border-radius:var(--r);font-size:13px;font-weight:500;cursor:pointer" onclick="go('game')">MedWordle</button></div></div></div>`;}
 
-function renderStartPanel(compact = false) {
-  const categories = state.overview
-    ? Object.keys(state.overview.category_mastery)
-    : ['Cardiovascular','Neurology','Respiratory','Endocrinology','Pharmacology',
-       'Pathology','Microbiology','Psychiatry','Immunology','Hematology',
-       'Gastroenterology','Nephrology','Anatomy'];
-
-  return `
-    ${!compact ? `<div class="start-hero">
-      <h1>Adaptive Medical Quiz</h1>
-      <p>The AI selects each question to maximize information gain about your knowledge state using Shannon entropy.</p>
-    </div>` : ''}
-    <div class="mode-grid">
-      <div class="mode-card ${state.quizMode==='adaptive'?'selected':''}" onclick="setMode('adaptive')">
-        <div class="mode-icon">${state.quizMode==='adaptive'?'✦':'⬡'}</div>
-        <div class="mode-title">Adaptive (AI-Driven)</div>
-        <div class="mode-desc">Greedy entropy maximization selects the most informative question each time.</div>
-      </div>
-      <div class="mode-card ${state.quizMode==='category'?'selected':''}" onclick="setMode('category')">
-        <div class="mode-icon">📂</div>
-        <div class="mode-title">By Category</div>
-        <div class="mode-desc">Focus on one medical domain — entropy scoring still active within category.</div>
-      </div>
-      <div class="mode-card ${state.quizMode==='difficulty'?'selected':''}" onclick="setMode('difficulty')">
-        <div class="mode-icon">📊</div>
-        <div class="mode-title">By Difficulty</div>
-        <div class="mode-desc">Challenge yourself with a specific difficulty tier (1=basic to 4=expert).</div>
-      </div>
+/* GAME */
+function startGame(tl){
+  tl=typeof tl==='number'?tl:(S.gLen||0);S.gLen=tl;
+  S.gw=selGameWord(S.beliefs,S.gUsed,tl);
+  S.gg=[];S.gc_='';S.gstat='playing';S.ghint=null;S.gEtym=false;S.err=null;
+  R();setTimeout(()=>document.addEventListener('keydown',kbGlobal),50);
+}
+function rGame(){
+  if(!S.gw){startGame(0);return'';}
+  const gw=S.gw,wlen=gw.len,mx=S.gmx;
+  const pool=GW.filter(w=>w.len===wlen).map(w=>w.word);
+  let rem=[...pool];S.gg.forEach(({guess,pattern})=>{rem=filterPool(rem,guess,pattern);});
+  const pH=posEntropy(rem,wlen),mH=Math.max(...pH,0.001);
+  const kH=keyEntropyH(rem);
+  const maxKH=Math.max(...Object.values(kH),0.001);
+  const keyUsed={};S.gg.forEach(({guess,pattern})=>guess.split('').forEach((ch,i)=>{if(!keyUsed[ch]||keyUsed[ch]==='gray')keyUsed[ch]=pattern[i];}));
+  const opener=OPENERS[wlen]||'SEPSIS';
+  const left=mx-S.gg.length;
+  return`<div class="page"><div class="game-wrap">
+    <div style="text-align:center;margin-bottom:14px">
+      <div style="font-family:'DM Serif Display',serif;font-size:26px;color:#1a1a1a;margin-bottom:3px">MedWordle</div>
+      <div style="font-size:12px;color:#666">Guess the medical term from its definition · ${wlen} letters · ${mx} attempts</div>
+    </div>
+    <div class="clue-card">
+      <span class="clue-cat">${gw.cat}</span>
+      <div class="clue-label">Definition — identify this term</div>
+      <div class="clue-text">${gw.clue}</div>
+      <div class="clue-hint ${S.gEtym?'show':''}">${gw.hint}</div>
+      ${S.gstat==='playing'?`<div style="margin-top:9px;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <button onclick="S.gEtym=!S.gEtym;R();setTimeout(()=>document.addEventListener('keydown',kbGlobal),50)" style="font-size:10px;color:var(--pur-dk);background:#fff;border:1px solid var(--pur-b);padding:3px 9px;border-radius:99px;cursor:pointer">${S.gEtym?'Hide':'Show'} etymology hint</button>
+        <span style="font-size:11px;color:var(--pur-dk)">${left} ${left===1?'guess':'guesses'} left · ${rem.length} candidates</span>
+      </div>`:''}
     </div>
 
-    <div class="config-row">
-      ${state.quizMode === 'category' ? `
-        <div>
-          <label class="form-label">Category</label>
-          <select class="form-select" onchange="state.quizCategory=this.value">
-            <option value="">Select a category…</option>
-            ${categories.map(c => `<option value="${c}" ${state.quizCategory===c?'selected':''}>${c}</option>`).join('')}
-          </select>
-        </div>` : ''}
-      ${state.quizMode === 'difficulty' ? `
-        <div>
-          <label class="form-label">Difficulty Level</label>
-          <select class="form-select" onchange="state.quizDifficulty=parseInt(this.value)">
-            <option value="">Select difficulty…</option>
-            <option value="1">1 — Basic</option>
-            <option value="2">2 — Intermediate</option>
-            <option value="3">3 — Advanced</option>
-            <option value="4">4 — Expert</option>
-          </select>
-        </div>` : ''}
-      <div>
-        <label class="form-label">Number of Questions</label>
-        <select class="form-select" onchange="state.quizNumQ=parseInt(this.value)">
-          <option value="5" ${state.quizNumQ===5?'selected':''}>5 questions</option>
-          <option value="10" ${state.quizNumQ===10?'selected':''}>10 questions</option>
-          <option value="15" ${state.quizNumQ===15?'selected':''}>15 questions</option>
-          <option value="20" ${state.quizNumQ===20?'selected':''}>20 questions</option>
-        </select>
-      </div>
-    </div>
-    ${state.error ? `<div class="alert alert-error">${state.error}</div>` : ''}
-    <button class="btn btn-primary btn-lg" onclick="startQuiz()" style="width:100%">
-      ${state.loading ? '<div class="spinner"></div>' : '✦'} Start Adaptive Quiz
-    </button>`;
-}
-
-function setMode(m) { state.quizMode = m; state.quizCategory = ''; state.quizDifficulty = ''; render(); }
-
-async function startQuiz() {
-  if (state.quizMode==='category' && !state.quizCategory) { state.error='Please select a category'; render(); return; }
-  if (state.quizMode==='difficulty' && !state.quizDifficulty) { state.error='Please select a difficulty'; render(); return; }
-  state.loading = true; state.error = null; state.sessionSummary = null; render();
-  try {
-    const data = await api('POST', '/quiz/start', {
-      mode: state.quizMode,
-      category_filter: state.quizCategory || null,
-      difficulty_filter: state.quizDifficulty || null,
-      num_questions: state.quizNumQ,
-    });
-    state.session = { id: data.session_id, numQ: data.num_questions };
-    state.currentQuestion = data.first_question;
-    state.selectedAnswer = null; state.feedback = null;
-    state.questionsAsked = 0; state.questionsTotal = data.num_questions;
-    state.view = 'quiz'; state.loading = false;
-    render();
-  } catch(e) {
-    state.error = e.message; state.loading = false; render();
-  }
-}
-
-function renderQuestion() {
-  const q = state.currentQuestion;
-  const prog = state.questionsAsked / state.questionsTotal * 100;
-
-  return `<div class="page"><div class="quiz-wrap">
-    <div class="quiz-header">
-      <span style="font-size:13px;color:var(--ink3);font-family:var(--mono)">${state.questionsAsked+1} / ${state.questionsTotal}</span>
-      <div class="quiz-progress-bar"><div class="quiz-progress-fill" style="width:${prog}%"></div></div>
-      <button class="btn btn-ghost btn-sm" onclick="endSession()">End</button>
-    </div>
-
-    <div class="quiz-meta">
-      <span class="quiz-tag cat">📂 ${q.category}</span>
-      <span class="quiz-tag diff">${'★'.repeat(q.difficulty)}${'☆'.repeat(4-q.difficulty)} Difficulty ${q.difficulty}</span>
-      <span class="quiz-tag eig tooltip">EIG: ${q.eig_score.toFixed(3)}
-        <span class="tooltip-text">Expected Information Gain — higher = more informative question</span>
+    ${S.gg.length===0&&S.gstat==='playing'?`
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+      <span style="font-size:11px;color:#aaa">Highest-entropy opener for ${wlen}-letter terms:</span>
+      <span class="opener-chip" onclick="useOp('${opener}')">
+        <span style="font-size:10px">Use</span><span class="opener-word">${opener}</span>
+        <span style="font-size:10px;color:var(--amb)">H=${wEntropy(opener,pool).toFixed(2)}</span>
       </span>
+    </div>`:``}
+
+    ${S.gg.length>0&&S.gstat==='playing'?`
+    <div>
+      <div class="pos-entropy">
+        ${pH.map((h,i)=>`<div class="pos-bar-wrap"><div class="pos-bar" style="height:${Math.round(h/mH*38)+3}px;background:${h>mH*.7?'var(--red-b)':h>mH*.4?'var(--amb-b)':'var(--grn-b)'}"></div></div>`).join('')}
+      </div>
+      <div class="pos-entropy-label">Position uncertainty · red=high entropy (unknown) · green=low (likely identified) · ${rem.length} words remain</div>
+    </div>`:''}
+
+    <div class="game-grid" id="ggrid">${rGrid(wlen,mx)}</div>
+
+    ${S.gstat==='solved'?`<div class="solved-banner"><div class="banner-word">${gw.word}</div><div class="banner-sub">Solved in ${S.gg.length} ${S.gg.length===1?'guess':'guesses'} · <em>${gw.hint}</em></div><button class="pbtn" style="width:auto;padding:8px 18px" onclick="nxtGame()">Next term</button></div>`:''}
+    ${S.gstat==='failed'?`<div class="failed-banner"><div class="banner-word">${gw.word}</div><div class="banner-sub"><em>${gw.hint}</em></div><button class="pbtn" style="width:auto;padding:8px 18px;background:var(--red);border:none" onclick="nxtGame()">Try another</button></div>`:''}
+
+    ${S.gstat==='playing'&&S.gg.length>0?`
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+      <button onclick="showH()" style="font-size:11px;background:var(--pur-bg);color:var(--pur-dk);border:1px solid var(--pur-b);padding:6px 12px;border-radius:var(--r);cursor:pointer;font-weight:500">AI hint (${rem.length} candidates)</button>
+      ${S.ghint?`<div class="hint-box">Best guess: <span class="hint-word">${S.ghint}</span><span style="font-size:10px;opacity:.7">max EIG over ${rem.length} remaining</span></div>`:''}
+    </div>`:''}
+
+    ${rKbd(keyUsed,kH,maxKH)}
+
+    <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:14px">
+      <span style="font-size:11px;color:#aaa">Word length:</span>
+      ${[0,6,7,8,9,10,11,12].map(l=>`<button class="len-btn ${S.gLen===l?'on':''}" onclick="startGame(${l})">${l===0?'Any':l}</button>`).join('')}
+      <button class="gbtn" style="margin-left:auto;font-size:11px;padding:5px 12px" onclick="startGame(S.gLen)">New term</button>
     </div>
 
-    <div class="card" style="margin-bottom:20px">
-      <div style="font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-bottom:8px">What does this mean?</div>
-      <div class="quiz-term">${q.term_name}</div>
-      ${q.root ? `<div style="font-size:12px;color:var(--ink3);font-style:italic">Etymology: ${q.root}</div>` : ''}
-    </div>
-
-    <div class="quiz-options" id="options">
-      ${q.options.map((opt,i) => {
-        let cls = 'quiz-option';
-        if (state.selectedAnswer !== null) {
-          if (opt === q.correct && opt === state.selectedAnswer) cls += ' selected-correct';
-          else if (opt === state.selectedAnswer && opt !== q.correct) cls += ' selected-wrong';
-          else if (opt === q.correct) cls += ' reveal-correct';
-        }
-        return `<button class="${cls}" data-opt="${i}" ${state.selectedAnswer!==null?'disabled':''} onclick="selectAnswer('${CSS.escape(opt)}','${CSS.escape(q.correct)}')">${opt}</button>`;
-      }).join('')}
-    </div>
-
-    ${state.feedback ? renderFeedback() : ''}
-
-    ${state.feedback ? `
-      <div style="text-align:center">
-        <button class="btn btn-primary btn-lg" onclick="nextQuestion()">
-          ${state.loading ? '<div class="spinner"></div>' : state.questionsAsked+1 >= state.questionsTotal ? 'View Results ✦' : 'Next Question →'}
-        </button>
-      </div>` : ''}
+    ${S.ghist.length?`<div class="card" style="margin-top:14px"><div class="sec">Recent games</div>${S.ghist.slice(0,8).map(g=>`<div class="gh-row"><span class="gh-word">${g.word}</span><span style="font-size:10px;color:#aaa;flex:1">${g.cat}</span><span class="gh-res ${g.solved?'gh-ok':'gh-fail'}">${g.solved?`${g.tries} guesses`:'Failed'}</span></div>`).join('')}</div>`:''}
   </div></div>`;
 }
-
-async function selectAnswer(selected, correct) {
-  if (state.selectedAnswer !== null) return;
-  const startTime = Date.now();
-  state.selectedAnswer = selected;
-  state.loading = true; render();
-
-  try {
-    const q = state.currentQuestion;
-    const data = await api('POST', '/quiz/answer', {
-      session_id: state.session.id,
-      term_id: q.term_id,
-      selected_answer: selected,
-      response_time_ms: Date.now() - startTime,
-    });
-    state.feedback = data.feedback;
-    state.questionsAsked++;
-    if (data.session_complete) {
-      state.sessionSummary = data.session_summary;
-      state.nextQuestion = null;
-    } else {
-      state.nextQuestion = data.next_question;
+function rGrid(wlen,mx){
+  const rows=[];
+  for(let r=0;r<mx;r++){
+    const subm=r<S.gg.length,curr=r===S.gg.length&&S.gstat==='playing';
+    const tiles=[];
+    for(let c=0;c<wlen;c++){
+      let l='',cls='gtile';
+      if(subm){l=S.gg[r].guess[c]||'';cls+=` ${S.gg[r].pattern[c]} reveal`;}
+      else if(curr){l=S.gc_[c]||'';if(l)cls+=' filled';if(c===S.gc_.length)cls+=' cur-pos';}
+      tiles.push(`<div class="${cls}">${l}</div>`);
     }
-    state.loading = false;
-    render();
-  } catch(e) {
-    state.error = e.message; state.loading = false; render();
+    rows.push(`<div class="game-row" ${curr?'id="cur-row"':''}>${tiles.join('')}</div>`);
   }
+  return rows.join('');
 }
-
-function renderFeedback() {
-  const fb = state.feedback;
-  return `<div class="feedback-card ${fb.is_correct?'correct':'wrong'}">
-    <div class="feedback-title">${fb.is_correct ? '✓ Correct!' : '✗ Incorrect'}</div>
-    <div class="feedback-def">${fb.correct_answer}</div>
-    <div class="feedback-pills">
-      ${fb.mnemonic ? `<span class="feedback-pill mnemonic">💡 ${fb.mnemonic}</span>` : ''}
-      ${fb.root ? `<span class="feedback-pill root">📚 ${fb.root}</span>` : ''}
-      ${(fb.related_terms||[]).map(r => `<span class="feedback-pill related">→ ${r}</span>`).join('')}
-    </div>
-    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-      <span class="entropy-chip">Δ entropy: ${fb.entropy_delta > 0 ? '+' : ''}${fb.entropy_delta.toFixed(4)} bits</span>
-      <span class="entropy-chip">Belief: ${(fb.belief_after*100).toFixed(0)}%</span>
-    </div>
+function rKbd(keyUsed,kH,maxKH){
+  const rows=['QWERTYUIOP'.split(''),'ASDFGHJKL'.split(''),['ENTER',...'ZXCVBNM'.split(''),'⌫']];
+  return`<div class="kbd">
+    ${S.gg.length>0?`<div style="text-align:center;font-size:10px;color:#bbb;margin-bottom:4px">Purple border = high letter value in remaining candidates</div>`:''}
+    ${rows.map(row=>`<div class="kbd-row">${row.map(k=>{
+      const wide=k==='ENTER'||k==='⌫';
+      let cls='key'+(wide?' wide':'');
+      const st=keyUsed[k];if(st)cls+=` ${st}`;
+      let ex='';
+      if(!st&&kH[k]){const intens=kH[k]/maxKH;ex=`style="border:${Math.round(intens*2)+1}px solid rgba(83,74,183,${(intens*.75).toFixed(2)})"`;}
+      return`<button class="${cls}" ${ex} onclick="kbIn('${k}')">${k}</button>`;
+    }).join('')}</div>`).join('')}
   </div>`;
 }
-
-function nextQuestion() {
-  if (state.sessionSummary) { render(); return; }
-  state.currentQuestion = state.nextQuestion;
-  state.selectedAnswer = null; state.feedback = null; state.nextQuestion = null;
-  render();
+function upGrid(){const g=document.getElementById('ggrid');if(g)g.innerHTML=rGrid(S.gw.len,S.gmx);}
+function useOp(w){S.gc_=w;upGrid();}
+function kbIn(k){
+  if(S.gstat!=='playing')return;
+  if(k==='ENTER'){subGuess();return;}
+  if(k==='⌫'){S.gc_=S.gc_.slice(0,-1);upGrid();return;}
+  if(S.gc_.length<S.gw.len){S.gc_+=k;upGrid();}
+}
+function subGuess(){
+  if(!S.gw||S.gstat!=='playing')return;
+  const guess=S.gc_.toUpperCase();
+  if(guess.length!==S.gw.len){const r=document.getElementById('cur-row');if(r){r.classList.add('shake');setTimeout(()=>r.classList.remove('shake'),500);}return;}
+  const pattern=getPat(guess,S.gw.word);S.gg.push({guess,pattern});S.gc_='';S.ghint=null;
+  const solved=pattern.every(p=>p==='green');
+  if(solved){
+    S.gstat='solved';S.gUsed.add(S.gw.id);
+    S.ghist.unshift({word:S.gw.word,cat:S.gw.cat,solved:true,tries:S.gg.length,date:new Date().toLocaleDateString()});
+    const qt=TERMS.find(t=>t.term.toUpperCase().replace(/[^A-Z]/g,'')===S.gw.word||t.id===S.gw.id);
+    if(qt)S.beliefs=bUpd(S.beliefs,qt.id,true);
+    sv();
+  }else if(S.gg.length>=S.gmx){
+    S.gstat='failed';S.gUsed.add(S.gw.id);
+    S.ghist.unshift({word:S.gw.word,cat:S.gw.cat,solved:false,tries:S.gmx,date:new Date().toLocaleDateString()});
+    const qt=TERMS.find(t=>t.term.toUpperCase().replace(/[^A-Z]/g,'')===S.gw.word||t.id===S.gw.id);
+    if(qt)S.beliefs=bUpd(S.beliefs,qt.id,false);
+    sv();
+  }
+  document.removeEventListener('keydown',kbGlobal);
+  R();
+  if(S.gstat==='playing')setTimeout(()=>document.addEventListener('keydown',kbGlobal),50);
+}
+function showH(){
+  const pool=GW.filter(w=>w.len===S.gw.len).map(w=>w.word);
+  let rem=[...pool];S.gg.forEach(({guess,pattern})=>{rem=filterPool(rem,guess,pattern);});
+  S.ghint=rem.length>0?bestGuess(rem):'?';
+  R();setTimeout(()=>document.addEventListener('keydown',kbGlobal),50);
+}
+function nxtGame(){
+  document.removeEventListener('keydown',kbGlobal);
+  S.gw=null;S.gg=[];S.gc_='';S.gstat='playing';S.ghint=null;S.gEtym=false;
+  startGame(S.gLen);
 }
 
-function endSession() {
-  state.session = null; state.currentQuestion = null;
-  state.feedback = null; state.sessionSummary = null; state.selectedAnswer = null;
-  state.view = 'quiz'; render();
+/* PROGRESS */
+function rProg(){
+  const pt=S.ptab||'overview';
+  return`<div class="page"><div style="font-size:22px;font-weight:500;font-family:'DM Serif Display',serif;margin-bottom:14px">Progress</div>
+    <div class="tabs">${['overview','knowledge map','history'].map(t=>`<button class="tab ${pt===t?'on':''}" onclick="S.ptab='${t}';R()">${t[0].toUpperCase()+t.slice(1)}</button>`).join('')}</div>
+    ${pt==='overview'?rPO():pt==='knowledge map'?rKM():rHist()}
+  </div>`;
 }
-
-function renderSessionSummary() {
-  const s = state.sessionSummary;
-  if (!s) return '';
-  const acc = s.accuracy;
-  return `<div class="page"><div class="summary-wrap">
-    <div class="summary-score">${acc}%</div>
-    <div class="summary-label">${s.correct_answers} of ${s.questions_asked} correct</div>
-    <div class="summary-chips">
-      <span class="summary-chip chip-teal">Mastery: ${s.overall_mastery}%</span>
-      <span class="summary-chip chip-violet">Entropy: ${s.entropy_end?.toFixed(3)} bits</span>
-      <span class="summary-chip chip-amber">Info gained: ${s.total_information_gained?.toFixed(3)} bits</span>
+function rPO(){
+  const cm=catM(S.beliefs),ovm=om(S.beliefs),h=+aE(S.beliefs).toFixed(4);
+  const tq=S.sessions.reduce((s,ss)=>s+ss.q,0),tc=S.sessions.reduce((s,ss)=>s+ss.c,0);
+  const acc=tq?+(tc/tq*100).toFixed(1):0;
+  const gSol=S.ghist.filter(g=>g.solved).length;
+  const avgT=gSol?+(S.ghist.filter(g=>g.solved).reduce((s,g)=>s+g.tries,0)/gSol).toFixed(1):'—';
+  const str=TERMS.map(t=>({term:t.term,cat:t.cat,m:+(S.beliefs[t.id]*100).toFixed(1)})).sort((a,b)=>b.m-a.m).slice(0,5);
+  const wk=TERMS.map(t=>({term:t.term,cat:t.cat,m:+(S.beliefs[t.id]*100).toFixed(1)})).sort((a,b)=>a.m-b.m).slice(0,5);
+  return`
+    <div class="g4" style="margin-bottom:12px">
+      <div class="met"><div class="ml">Mastery</div><div class="mv t">${ovm}%</div></div>
+      <div class="met"><div class="ml">Accuracy</div><div class="mv a">${acc}%</div></div>
+      <div class="met"><div class="ml">Sessions</div><div class="mv">${S.sessions.length}</div></div>
+      <div class="met"><div class="ml">Entropy</div><div class="mv p" style="font-size:14px;font-family:'DM Mono',monospace">${h}</div></div>
     </div>
-    <div class="card" style="text-align:left;margin-bottom:24px">
-      <div class="section-title">Focus Areas</div>
-      ${s.weakest_areas.map(a => `<div class="weak-area">📉 ${a.category} — ${a.mastery}% mastery</div>`).join('')}
+    <div class="g4" style="margin-bottom:12px">
+      <div class="met"><div class="ml">Games played</div><div class="mv g">${S.ghist.length}</div></div>
+      <div class="met"><div class="ml">Games won</div><div class="mv g">${gSol}</div></div>
+      <div class="met"><div class="ml">Win rate</div><div class="mv g">${S.ghist.length?+(gSol/S.ghist.length*100).toFixed(0):0}%</div></div>
+      <div class="met"><div class="ml">Avg guesses</div><div class="mv">${avgT}</div></div>
     </div>
-    <div style="display:flex;gap:12px;justify-content:center">
-      <button class="btn btn-primary btn-lg" onclick="endSession();goto('quiz')">New Session</button>
-      <button class="btn btn-ghost btn-lg" onclick="state.sessionSummary=null;endSession();loadProgress()">View Progress</button>
-    </div>
-  </div></div>`;
-}
-
-// ── Progress Page ──────────────────────────────────────────────────────
-async function loadProgress() {
-  state.view = 'progress'; state.loading = true; render();
-  try {
-    state.overview = await api('GET', '/progress/overview');
-    state.knowledgeMap = await api('GET', '/progress/knowledge-map');
-    state.loading = false; render();
-  } catch(e) { state.error = e.message; state.loading = false; render(); }
-}
-
-function renderProgressPage() {
-  const ov = state.overview;
-  if (!ov) return `<div class="page"><div class="loading-full"><div class="spinner"></div></div></div>`;
-
-  return `<div class="page"><div class="page-wide">
-    <div class="dash-header">
-      <h1>Knowledge Progress</h1>
-      <p>Bayesian belief state across all ${ov.stats.terms_total} medical terms — updated after every answer.</p>
-    </div>
-    <div class="tab-bar">
-      <button class="tab ${state.progressTab==='overview'?'active':''}" onclick="state.progressTab='overview';render()">Overview</button>
-      <button class="tab ${state.progressTab==='map'?'active':''}" onclick="state.progressTab='map';render()">Knowledge Map</button>
-      <button class="tab ${state.progressTab==='history'?'active':''}" onclick="loadSessionHistory()">Session History</button>
-    </div>
-    ${state.progressTab === 'overview' ? renderProgressOverview(ov) : ''}
-    ${state.progressTab === 'map' ? renderKnowledgeMap() : ''}
-    ${state.progressTab === 'history' ? renderSessionHistory() : ''}
-  </div></div>`;
-}
-
-function renderProgressOverview(ov) {
-  const s = ov.stats;
-  return `
-    <div class="stats-grid">
-      <div class="stat-card accent-teal"><div class="stat-label">Overall Mastery</div><div class="stat-value">${s.overall_mastery}%</div><div class="stat-sub">${s.terms_tested}/${s.terms_total} terms tested</div></div>
-      <div class="stat-card accent-amber"><div class="stat-label">Accuracy</div><div class="stat-value">${s.overall_accuracy}%</div><div class="stat-sub">${s.total_correct} / ${s.total_questions} correct</div></div>
-      <div class="stat-card"><div class="stat-label">Sessions</div><div class="stat-value">${s.total_sessions}</div><div class="stat-sub">${s.streak_days} day streak</div></div>
-      <div class="stat-card accent-violet"><div class="stat-label">Entropy</div><div class="stat-value" style="font-size:20px;font-family:var(--mono)">${s.current_entropy.toFixed(4)}</div><div class="stat-sub">bits of uncertainty</div></div>
-    </div>
-
-    <div class="two-col">
+    <div class="g2">
+      <div class="card"><div class="sec">Category mastery</div>${Object.entries(cm).map(([c,s])=>`<div class="brow"><div class="bcat">${c}</div><div class="btrk"><div class="bfil" style="width:${s}%;background:${mc(s)}"></div></div><div class="bpct">${s}%</div></div>`).join('')}</div>
       <div class="card">
-        <div class="section-title">Category Mastery</div>
-        <div class="mastery-grid">
-          ${Object.entries(ov.category_mastery).map(([cat,data]) => `
-            <div class="mastery-item">
-              <div class="mastery-cat">${cat}</div>
-              <div class="mastery-bar-wrap"><div class="mastery-bar" style="width:${data.mastery_score}%;background:${masteryColor(data.mastery_score)}"></div></div>
-              <div class="mastery-pct">${data.mastery_score}%</div>
-            </div>
-          `).join('')}
-        </div>
-      </div>
-      <div class="card">
-        <div class="section-title">Weakest Terms</div>
-        ${ov.weak_terms.slice(0,8).map(t => `
-          <div class="term-row">
-            <div><div class="term-name">${t.term}</div><div class="term-cat">${t.category} · ★${t.difficulty}</div></div>
-            <span class="mastery-pill ${t.mastery<35?'mp-low':t.mastery<65?'mp-mid':'mp-high'}">${t.mastery}%</span>
-          </div>
-        `).join('')}
-      </div>
-    </div>
-
-    <div class="two-col">
-      <div class="card">
-        <div class="section-title">Strongest Terms</div>
-        ${ov.strong_terms.slice(0,8).map(t => `
-          <div class="term-row">
-            <div><div class="term-name">${t.term}</div><div class="term-cat">${t.category}</div></div>
-            <span class="mastery-pill mp-high">${t.mastery}%</span>
-          </div>
-        `).join('')}
-      </div>
-      <div class="card">
-        <div class="section-title">Session Accuracy Trend</div>
-        ${ov.accuracy_trend.length ? `
-          <div style="display:flex;flex-direction:column;gap:8px">
-            ${ov.accuracy_trend.slice().reverse().map(s => `
-              <div style="display:flex;align-items:center;gap:10px">
-                <div style="font-size:11px;color:var(--ink3);font-family:var(--mono);min-width:72px">${new Date(s.date).toLocaleDateString()}</div>
-                <div style="flex:1;height:10px;background:var(--border);border-radius:5px;overflow:hidden">
-                  <div style="height:100%;width:${s.accuracy}%;background:${masteryColor(s.accuracy)};border-radius:5px"></div>
-                </div>
-                <div style="font-family:var(--mono);font-size:12px;font-weight:600;min-width:36px;color:${masteryColor(s.accuracy)}">${s.accuracy}%</div>
-              </div>
-            `).join('')}
-          </div>
-        ` : '<div class="empty">No sessions yet</div>'}
+        <div class="sec">Strongest</div>${str.map(t=>`<div class="brow"><div style="flex:1"><div style="font-size:11px;font-weight:500">${t.term}</div><div style="font-size:10px;color:#aaa">${t.cat}</div></div><span style="font-size:10px;padding:2px 6px;border-radius:99px;background:var(--grn-bg);color:var(--grn-dk)">${t.m}%</span></div>`).join('')}
+        <div class="sep"></div><div class="sec">Weakest</div>${wk.map(t=>`<div class="brow"><div style="flex:1"><div style="font-size:11px;font-weight:500">${t.term}</div><div style="font-size:10px;color:#aaa">${t.cat}</div></div><span style="font-size:10px;padding:2px 6px;border-radius:99px;background:${mb(t.m)};color:${mc(t.m)}">${t.m}%</span></div>`).join('')}
       </div>
     </div>`;
 }
-
-function renderKnowledgeMap() {
-  const km = state.knowledgeMap;
-  if (!km) return `<div class="loading-full"><div class="spinner"></div></div>`;
-
-  // Group by category
-  const byCategory = {};
-  km.terms.forEach(t => { byCategory[t.category] = byCategory[t.category] || []; byCategory[t.category].push(t); });
-
-  return `
-    <div class="card" style="margin-bottom:24px">
-      <div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap">
-        <div><div class="stat-label">Overall Entropy</div><div style="font-family:var(--mono);font-size:18px;color:var(--violet)">${km.overall_entropy.toFixed(4)} bits</div></div>
-        <div><div class="stat-label">Overall Mastery</div><div style="font-size:18px;color:var(--teal);font-weight:600">${km.overall_mastery}%</div></div>
-        <div style="flex:1;text-align:right">
-          <div style="font-size:12px;color:var(--ink3)">Belief legend:</div>
-          <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:4px">
-            <span class="mastery-pill mp-low">0–35% Unknown</span>
-            <span class="mastery-pill mp-mid">35–65% Learning</span>
-            <span class="mastery-pill mp-high">65–100% Known</span>
-          </div>
-        </div>
-      </div>
-    </div>
-    ${Object.entries(byCategory).map(([cat, terms]) => `
-      <div class="card" style="margin-bottom:16px">
-        <div class="section-title" style="margin-bottom:12px">${cat}</div>
-        <div style="display:flex;flex-wrap:wrap;gap:8px">
-          ${terms.map(t => `
-            <div style="border:1px solid var(--border);border-radius:var(--r);padding:8px 12px;min-width:140px;background:${t.mastery>=65?'var(--green-light)':t.mastery>=35?'var(--amber-light)':'var(--red-light)'}">
-              <div style="font-size:13px;font-weight:500;color:var(--ink)">${t.term}</div>
-              <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px">
-                <span style="font-size:10px;color:var(--ink3)">${t.tested?'Tested':'Untested'}</span>
-                <span class="mastery-pill ${t.mastery<35?'mp-low':t.mastery<65?'mp-mid':'mp-high'}" style="font-size:10px">${t.mastery}%</span>
-              </div>
-            </div>
-          `).join('')}
-        </div>
-      </div>
-    `).join('')}`;
+function rKM(){
+  const bc={};TERMS.forEach(t=>{bc[t.cat]=bc[t.cat]||[];bc[t.cat].push(t);});
+  return Object.entries(bc).map(([cat,terms])=>`<div class="card" style="margin-bottom:8px"><div style="font-size:12px;font-weight:500;margin-bottom:8px">${cat}</div><div>${terms.map(t=>{const m=+(S.beliefs[t.id]*100).toFixed(1);return`<span class="km-item" style="background:${mb(m)};color:${mc(m)};border-color:${mbr(m)}">${t.term} <span style="font-family:'DM Mono',monospace;font-size:9px">${m}%${S.asked.has(t.id)?' ✓':''}</span></span>`;}).join('')}</div></div>`).join('');
+}
+function rHist(){
+  if(!S.sessions.length&&!S.ghist.length)return`<div style="text-align:center;color:#aaa;padding:2rem">No history yet.</div>`;
+  return`${S.sessions.length?`<div class="card" style="margin-bottom:12px"><div class="sec">Quiz sessions</div>${S.sessions.slice(0,10).map(ss=>`<div class="sr"><div style="font-size:10px;font-family:'DM Mono',monospace;color:#aaa;min-width:68px">${ss.date}</div><div style="flex:1;font-size:11px">${ss.q} Q</div><span class="badge bp" style="font-size:9px">-${ss.info?.toFixed(3)||'?'} bits</span><span style="font-size:11px;font-weight:500;color:${mc(ss.acc)}">${ss.acc}%</span></div>`).join('')}</div>`:''}
+  ${S.ghist.length?`<div class="card"><div class="sec">MedWordle games</div>${S.ghist.slice(0,12).map(g=>`<div class="gh-row"><span class="gh-word">${g.word}</span><span style="font-size:10px;color:#aaa;flex:1">${g.cat}</span><span style="font-size:10px;font-family:'DM Mono',monospace;color:#bbb">${g.date}</span><span class="gh-res ${g.solved?'gh-ok':'gh-fail'}">${g.solved?`${g.tries} guesses`:'Failed'}</span></div>`).join('')}</div>`:''}`;
 }
 
-async function loadSessionHistory() {
-  state.progressTab = 'history'; render();
-  if (state.sessionHistory) return;
-  try {
-    state.sessionHistory = await api('GET', '/progress/sessions?limit=30');
-    render();
-  } catch(e) { state.error = e.message; render(); }
-}
-
-function renderSessionHistory() {
-  const sh = state.sessionHistory;
-  if (!sh) return `<div class="loading-full"><div class="spinner"></div></div>`;
-  if (!sh.sessions.length) return `<div class="empty">No completed sessions yet.</div>`;
-  return `
+/* LEADERBOARD */
+function rLB(){
+  const es=Object.entries(S.users).map(([u,ud])=>{
+    const b=ud.beliefs&&Object.keys(ud.beliefs).length?ud.beliefs:initB();
+    const m=om(b),q=(ud.sessions||[]).reduce((s,ss)=>s+ss.q,0),c=(ud.sessions||[]).reduce((s,ss)=>s+ss.c,0);
+    const gh=ud.ghist||[];const gs=gh.filter(g=>g.solved).length;
+    return{u,name:ud.name||u,role:ud.role||'student',mastery:m,acc:q?+(c/q*100).toFixed(1):0,sessions:(ud.sessions||[]).length,h:+aE(b).toFixed(3),gP:gh.length,gS:gs};
+  }).sort((a,b)=>b.mastery-a.mastery);
+  if(!es.length)return`<div class="page"><div style="text-align:center;color:#aaa;padding:2rem">No users yet.</div></div>`;
+  return`<div class="page">
+    <div style="font-size:22px;font-weight:500;font-family:'DM Serif Display',serif;margin-bottom:4px">Leaderboard</div>
+    <div style="font-size:12px;color:#666;margin-bottom:14px">Ranked by mastery · quiz accuracy · MedWordle performance</div>
     <div class="card">
-      <div class="section-title">All Sessions (${sh.total})</div>
-      ${sh.sessions.map(s => `
-        <div class="session-row">
-          <div class="session-date">${new Date(s.started_at).toLocaleDateString()}</div>
-          <div class="session-mode">${s.mode.charAt(0).toUpperCase()+s.mode.slice(1)} ${s.category_filter?'· '+s.category_filter:''}</div>
-          <div style="font-size:12px;color:var(--ink3);font-family:var(--mono)">${s.questions_asked} Q</div>
-          <div style="font-size:11px;color:var(--violet);font-family:var(--mono)">Δ${s.information_gained.toFixed(3)} bits</div>
-          <div class="session-acc ${s.accuracy>=75?'acc-good':s.accuracy>=50?'acc-ok':'acc-bad'}">${s.accuracy}%</div>
-        </div>
-      `).join('')}
-    </div>`;
-}
-
-// ── Leaderboard ────────────────────────────────────────────────────────
-async function loadLeaderboard() {
-  state.view = 'leaderboard'; state.loading = true; render();
-  try {
-    state.leaderboard = await api('GET', '/progress/leaderboard', null, true);
-    state.loading = false; render();
-  } catch(e) { state.error = e.message; state.loading = false; render(); }
-}
-
-function renderLeaderboardPage() {
-  const lb = state.leaderboard;
-  if (!lb) return `<div class="page"><div class="loading-full"><div class="spinner"></div></div></div>`;
-  return `<div class="page"><div class="page-center">
-    <div class="dash-header">
-      <h1>Leaderboard</h1>
-      <p>Ranked by overall knowledge mastery score across all ${state.overview?.stats?.terms_total||50} medical terms.</p>
-    </div>
-    <div class="card">
-      <table class="lb-table">
-        <thead>
-          <tr>
-            <th>#</th><th>User</th><th>Role</th><th>Mastery</th><th>Accuracy</th><th>Sessions</th><th>Entropy</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${lb.leaderboard.map(u => `
-            <tr>
-              <td><div class="lb-rank ${u.rank<=3?'top':''}">${u.rank<=3?['🥇','🥈','🥉'][u.rank-1]:u.rank}</div></td>
-              <td><div class="lb-user">${u.full_name||u.username} ${u.username===state.user?.username?'<span class="tag tag-green">You</span>':''}</div></td>
-              <td><div class="lb-role">${u.role}</div></td>
-              <td><div class="lb-score">${u.overall_mastery}%</div></td>
-              <td><div style="font-family:var(--mono);font-size:13px">${u.accuracy}%</div></td>
-              <td><div style="font-size:13px;color:var(--ink3)">${u.total_sessions}</div></td>
-              <td><div style="font-family:var(--mono);font-size:12px;color:var(--violet)">${u.entropy.toFixed(3)}</div></td>
-            </tr>
-          `).join('')}
-        </tbody>
+      <table style="width:100%;border-collapse:collapse;font-size:13px">
+        <thead><tr style="border-bottom:1px solid #f0ede8">${['#','User','Mastery','Accuracy','Wordle W/P','Entropy'].map(h=>`<th style="text-align:left;padding:7px 6px;font-size:10px;color:#888;font-weight:500">${h}</th>`).join('')}</tr></thead>
+        <tbody>${es.map((e,i)=>`<tr style="border-bottom:1px solid #f8f6f3">
+          <td style="padding:9px 6px;font-size:15px;font-weight:500;color:${i<3?'var(--amb)':'#bbb'}">${i+1}</td>
+          <td style="padding:9px 6px"><div style="font-size:13px;font-weight:500">${e.name}${e.u===S.user?` <span style="font-size:9px;background:var(--teal-bg);color:var(--teal-dk);padding:1px 5px;border-radius:99px">you</span>`:''}</div><div style="font-size:10px;color:#aaa;text-transform:capitalize">${e.role}</div></td>
+          <td style="padding:9px 6px;font-family:'DM Mono',monospace;font-weight:600;color:var(--teal)">${e.mastery}%</td>
+          <td style="padding:9px 6px;font-family:'DM Mono',monospace">${e.acc}%</td>
+          <td style="padding:9px 6px;font-family:'DM Mono',monospace">${e.gS}/${e.gP}</td>
+          <td style="padding:9px 6px;font-family:'DM Mono',monospace;color:var(--pur)">${e.h}</td>
+        </tr>`).join('')}</tbody>
       </table>
     </div>
-  </div></div>`;
+  </div>`;
 }
 
-function bindPage() {
-  // Nothing extra needed — all events are inline onclick
-}
-
-// ── Boot ───────────────────────────────────────────────────────────────
-loadAuth();
-if (state.token && state.user) {
-  state.view = 'dashboard';
-  render();
-  loadDashboard();
-} else {
-  state.view = 'auth';
-  render();
-}
+/* BOOT */
+ld();
+if(S.user&&S.users[S.user]){S.view='dash';}else{S.view='auth';}
+R();
 </script>
 </body>
 </html>
